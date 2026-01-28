@@ -16,8 +16,7 @@ const openai = process.env.OPENROUTER_API_KEY
 // Using confirmed available free models on OpenRouter
 const FALLBACK_MODELS = [
   process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free',
-  'liquidai/lfm2.5-1.2b-instruct:free',
-  'xai/grok-beta:free',
+  'x-ai/grok-4-fast:free',
   'meta-llama/llama-3.1-8b-instruct:free'
 ];
 
@@ -131,7 +130,9 @@ router.post('/chat', auth, async (req, res) => {
       });
     }
     
-    if (error.status === 404 || error.message?.includes('No endpoints found') || error.message?.includes('not found')) {
+    if (error.status === 404 || error.status === 400 || 
+        error.message?.includes('No endpoints found') || error.message?.includes('not found') ||
+        error.message?.includes('not a valid model ID') || error.message?.includes('invalid model')) {
       return res.status(503).json({ 
         message: 'AI model temporarily unavailable. Please try again in a moment. The system will automatically try alternative models.',
         retryAfter: 30
