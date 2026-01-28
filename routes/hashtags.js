@@ -3,13 +3,20 @@ const OpenAI = require('openai');
 const { auth } = require('../middleware/auth');
 
 const router = express.Router();
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+// Use OpenRouter API (OpenAI-compatible) with free models
+const openai = process.env.OPENROUTER_API_KEY 
+  ? new OpenAI({ 
+      apiKey: process.env.OPENROUTER_API_KEY,
+      baseURL: 'https://openrouter.ai/api/v1'
+    }) 
+  : null;
+const DEFAULT_MODEL = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free';
 
 // Generate hashtags using AI
 router.post('/generate', auth, async (req, res) => {
   try {
     if (!openai) {
-      return res.status(500).json({ message: 'OpenAI API key not configured' });
+      return res.status(500).json({ message: 'OpenRouter API key not configured' });
     }
 
     const { content, platform, count = 10 } = req.body;
@@ -34,7 +41,7 @@ router.post('/generate', auth, async (req, res) => {
     Content: ${content}`;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: DEFAULT_MODEL,
       messages: [
         { 
           role: "system", 

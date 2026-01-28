@@ -7,14 +7,15 @@ const { Op } = require('sequelize');
 const router = express.Router();
 
 // Create transporter if email credentials are available
+// Defaults to Mailtrap SMTP settings for free tier
 const getTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     return null;
   }
   return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.EMAIL_PORT || '587'),
-    secure: false,
+    host: process.env.EMAIL_HOST || 'sandbox.smtp.mailtrap.io',
+    port: parseInt(process.env.EMAIL_PORT || '2525'),
+    secure: false, // true for 465, false for other ports
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS

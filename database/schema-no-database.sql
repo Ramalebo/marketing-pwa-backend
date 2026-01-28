@@ -4,17 +4,17 @@
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL,
   password VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
   role ENUM('admin', 'user') DEFAULT 'user',
   isMainUser BOOLEAN DEFAULT FALSE,
   createdBy INT NULL,
   isActive BOOLEAN DEFAULT TRUE,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  createdAt DATETIME NULL,
+  updatedAt DATETIME NULL,
   FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE SET NULL,
-  INDEX idx_email (email),
+  UNIQUE KEY idx_email (email(191)),
   INDEX idx_createdBy (createdBy)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -39,11 +39,11 @@ CREATE TABLE IF NOT EXISTS clients (
   locationLng DECIMAL(11, 8) NULL,
   tags TEXT NULL,
   createdBy INT NOT NULL,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  createdAt DATETIME NULL,
+  updatedAt DATETIME NULL,
   FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_createdBy (createdBy),
-  INDEX idx_email (email)
+  INDEX idx_email (email(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Notes table
@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS notes (
   priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
   aiRelevant BOOLEAN DEFAULT TRUE,
   createdBy INT NOT NULL,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  createdAt DATETIME NULL,
+  updatedAt DATETIME NULL,
   FOREIGN KEY (clientId) REFERENCES clients(id) ON DELETE SET NULL,
   FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_clientId (clientId),
@@ -79,8 +79,8 @@ CREATE TABLE IF NOT EXISTS ads (
   status ENUM('draft', 'pending', 'approved', 'published', 'archived') DEFAULT 'draft',
   clientId INT NULL,
   createdBy INT NOT NULL,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  createdAt DATETIME NULL,
+  updatedAt DATETIME NULL,
   FOREIGN KEY (clientId) REFERENCES clients(id) ON DELETE SET NULL,
   FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_clientId (clientId),
@@ -98,13 +98,13 @@ CREATE TABLE IF NOT EXISTS customer_contacts (
   tags TEXT NULL,
   notes TEXT NULL,
   createdBy INT NOT NULL,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  createdAt DATETIME NULL,
+  updatedAt DATETIME NULL,
   FOREIGN KEY (clientId) REFERENCES clients(id) ON DELETE CASCADE,
   FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_clientId (clientId),
   INDEX idx_createdBy (createdBy),
-  INDEX idx_email (email)
+  INDEX idx_email (email(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Post History table
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS post_history (
   status ENUM('success', 'failed', 'pending') DEFAULT 'pending',
   message TEXT NULL,
   error TEXT NULL,
-  publishedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  publishedAt DATETIME NULL,
   createdBy INT NOT NULL,
   FOREIGN KEY (adId) REFERENCES ads(id) ON DELETE CASCADE,
   FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE,
@@ -134,8 +134,8 @@ CREATE TABLE IF NOT EXISTS templates (
   content TEXT NOT NULL,
   variables TEXT NULL,
   createdBy INT NOT NULL,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  createdAt DATETIME NULL,
+  updatedAt DATETIME NULL,
   FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_type (type),
   INDEX idx_createdBy (createdBy)

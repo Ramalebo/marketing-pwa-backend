@@ -4,13 +4,20 @@ const { auth } = require('../middleware/auth');
 const OpenAI = require('openai');
 
 const router = express.Router();
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+// Use OpenRouter API (OpenAI-compatible) with free models
+const openai = process.env.OPENROUTER_API_KEY 
+  ? new OpenAI({ 
+      apiKey: process.env.OPENROUTER_API_KEY,
+      baseURL: 'https://openrouter.ai/api/v1'
+    }) 
+  : null;
+const DEFAULT_MODEL = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free';
 
 // Chat with AI chatbot
 router.post('/chat', auth, async (req, res) => {
   try {
     if (!openai) {
-      return res.status(500).json({ message: 'OpenAI API key not configured' });
+      return res.status(500).json({ message: 'OpenRouter API key not configured' });
     }
 
     const { message, clientId } = req.body;
@@ -29,11 +36,11 @@ router.post('/chat', auth, async (req, res) => {
         const clientData = client.toJSON();
         context += `Client Information:\n`;
         context += `Name: ${clientData.name}\n`;
-        if (clientData.businessName) context += `Business: ${clientData.businessName}\n`;
+        if (clientData.business_name) context += `Business: ${clientData.business_name}\n`;
         if (clientData.email) context += `Email: ${clientData.email}\n`;
-        if (clientData.phoneNumber) context += `Phone: ${clientData.phoneNumber}\n`;
-        if (clientData.locationCity || clientData.locationCountry) {
-          context += `Location: ${clientData.locationCity || ''}, ${clientData.locationCountry || ''}\n`;
+        if (clientData.phone_number) context += `Phone: ${clientData.phone_number}\n`;
+        if (clientData.location_city || clientData.location_country) {
+          context += `Location: ${clientData.location_city || ''}, ${clientData.location_country || ''}\n`;
         }
         context += `\n`;
       }
@@ -64,7 +71,7 @@ router.post('/chat', auth, async (req, res) => {
       : message;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: DEFAULT_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }

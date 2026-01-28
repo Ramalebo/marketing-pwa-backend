@@ -8,9 +8,24 @@ const router = express.Router();
 // Helper function to transform client data
 const transformClient = (client) => {
   const data = client.toJSON();
+  // Handle tags - convert array to comma-separated string for display
+  let tagsDisplay = '';
+  if (data.tags) {
+    if (Array.isArray(data.tags)) {
+      tagsDisplay = data.tags.join(', ');
+    } else if (typeof data.tags === 'string') {
+      try {
+        const parsed = JSON.parse(data.tags);
+        tagsDisplay = Array.isArray(parsed) ? parsed.join(', ') : data.tags;
+      } catch {
+        tagsDisplay = data.tags;
+      }
+    }
+  }
   return {
     ...data,
     id: data.id.toString(),
+    tags: tagsDisplay,
     socialMedia: {
       facebook: data.socialMediaFacebook,
       instagram: data.socialMediaInstagram,
@@ -54,6 +69,14 @@ const transformClientInput = (body) => {
       data.locationLng = data.location.coordinates.lng;
     }
     delete data.location;
+  }
+  // Handle tags - convert string to array if needed
+  if (data.tags) {
+    if (typeof data.tags === 'string') {
+      // If it's a comma-separated string, convert to array
+      data.tags = data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+    }
+    // If it's already an array, keep it as is
   }
   return data;
 };
