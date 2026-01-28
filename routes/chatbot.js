@@ -11,7 +11,37 @@ const openai = process.env.OPENROUTER_API_KEY
       baseURL: 'https://openrouter.ai/api/v1'
     }) 
   : null;
-const DEFAULT_MODEL = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free';
+
+// Fallback models in order of preference (if one is rate-limited, try the next)
+const FALLBACK_MODELS = [
+  process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free',
+  'google/gemini-flash-1.5:free',
+  'liquidai/lfm2.5-1.2b-instruct:free',
+  'xai/grok-beta:free'
+];
+
+// Helper function to try multiple models with fallback
+const tryWithFallback = async (models, requestFn) => {
+  let lastError = null;
+  
+  for (const model of models) {
+    try {
+      return await requestFn(model);
+    } catch (error) {
+      lastError = error;
+      // If it's a rate limit error, try next model
+      if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit')) {
+        console.log(`Model ${model} rate-limited, trying next fallback...`);
+        continue;
+      }
+      // For other errors, throw immediately
+      throw error;
+    }
+  }
+  
+  // If all models failed, throw the last error
+  throw lastError;
+};
 
 // Chat with AI chatbot
 router.post('/chat', auth, async (req, res) => {
@@ -70,13 +100,16 @@ router.post('/chat', auth, async (req, res) => {
       ? `${context}User Question: ${message}`
       : message;
 
-    const completion = await openai.chat.completions.create({
-      model: DEFAULT_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      max_tokens: 500
+    // Try with fallback models
+    const completion = await tryWithFallback(FALLBACK_MODELS, async (model) => {
+      return await openai.chat.completions.create({
+        model: model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        max_tokens: 500
+      });
     });
 
     const response = completion.choices[0].message.content;
@@ -87,7 +120,18 @@ router.post('/chat', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Chatbot Error:', error);
-    res.status(500).json({ message: error.message });
+    
+    // User-friendly error messages
+    if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit')) {
+      return res.status(429).json({ 
+        message: 'AI service is currently busy. Please try again in a few moments. Free models have rate limits.',
+        retryAfter: 60
+      });
+    }
+    
+    res.status(500).json({ 
+      message: error.message || 'Failed to get AI response. Please try again later.'
+    });
   }
 });
 

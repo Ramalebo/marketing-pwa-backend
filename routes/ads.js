@@ -11,7 +11,34 @@ const openai = process.env.OPENROUTER_API_KEY
       baseURL: 'https://openrouter.ai/api/v1'
     }) 
   : null;
-const DEFAULT_MODEL = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free';
+
+// Fallback models in order of preference
+const FALLBACK_MODELS = [
+  process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free',
+  'google/gemini-flash-1.5:free',
+  'liquidai/lfm2.5-1.2b-instruct:free',
+  'xai/grok-beta:free'
+];
+
+// Helper function to try multiple models with fallback
+const tryWithFallback = async (models, requestFn) => {
+  let lastError = null;
+  
+  for (const model of models) {
+    try {
+      return await requestFn(model);
+    } catch (error) {
+      lastError = error;
+      if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit')) {
+        console.log(`Model ${model} rate-limited, trying next fallback...`);
+        continue;
+      }
+      throw error;
+    }
+  }
+  
+  throw lastError;
+};
 
 // Helper to transform ad data
 const transformAd = (ad) => {
@@ -125,13 +152,16 @@ router.post('/generate', auth, async (req, res) => {
       ? `Client Context:\n${contextNotes}\n\nGenerate ad content for: ${prompt}`
       : `Generate ad content for: ${prompt}`;
 
-    const completion = await openai.chat.completions.create({
-      model: DEFAULT_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      max_tokens: 500
+    // Try with fallback models
+    const completion = await tryWithFallback(FALLBACK_MODELS, async (model) => {
+      return await openai.chat.completions.create({
+        model: model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        max_tokens: 500
+      });
     });
 
     const generatedContent = completion.choices[0].message.content;
@@ -163,7 +193,18 @@ router.post('/generate', auth, async (req, res) => {
     res.status(201).json(transformAd(ad));
   } catch (error) {
     console.error('AI Generation Error:', error);
-    res.status(500).json({ message: error.message });
+    
+    // User-friendly error messages
+    if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit')) {
+      return res.status(429).json({ 
+        message: 'AI service is currently busy. Please try again in a few moments. Free models have rate limits.',
+        retryAfter: 60
+      });
+    }
+    
+    res.status(500).json({ 
+      message: error.message || 'Failed to generate ad content. Please try again later.'
+    });
   }
 });
 
