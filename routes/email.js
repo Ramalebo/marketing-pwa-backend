@@ -1,34 +1,27 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
+const { MailtrapClient } = require('mailtrap');
 const { Client, CustomerContact } = require('../models');
 const { auth } = require('../middleware/auth');
 const { Op } = require('sequelize');
 
 const router = express.Router();
 
-// Create transporter if email credentials are available
-// Defaults to Mailtrap SMTP settings for free tier
-const getTransporter = () => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+// Initialize Mailtrap client if API token is available
+const getMailtrapClient = () => {
+  if (!process.env.MAILTRAP_API_TOKEN) {
     return null;
   }
-  return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'sandbox.smtp.mailtrap.io',
-    port: parseInt(process.env.EMAIL_PORT || '2525'),
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
+  return new MailtrapClient({
+    token: process.env.MAILTRAP_API_TOKEN
   });
 };
 
 // Send email to client or customer contacts
 router.post('/send', auth, async (req, res) => {
   try {
-    const transporter = getTransporter();
-    if (!transporter) {
-      return res.status(500).json({ message: 'Email credentials not configured' });
+    const mailtrap = getMailtrapClient();
+    if (!mailtrap) {
+      return res.status(500).json({ message: 'Mailtrap API token not configured' });
     }
 
     const { clientId, subject, html, text, contactIds } = req.body;
@@ -42,6 +35,10 @@ router.post('/send', auth, async (req, res) => {
     if (!clientData) {
       return res.status(404).json({ message: 'Client not found' });
     }
+
+    // Get sender email from environment or use default
+    const senderEmail = process.env.MAILTRAP_SENDER_EMAIL || 'noreply@dominantlogic.tech';
+    const senderName = process.env.MAILTRAP_SENDER_NAME || 'Marketing Platform';
 
     // If contactIds provided, send to customer contacts
     if (contactIds && contactIds.length > 0) {
@@ -61,20 +58,19 @@ router.post('/send', auth, async (req, res) => {
       const results = [];
       for (const contact of contacts) {
         try {
-          const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: contact.email,
+          const response = await mailtrap.send({
+            from: { name: senderName, email: senderEmail },
+            to: [{ email: contact.email }],
             subject: subject || 'Message from Marketing Platform',
             text: text || html,
             html: html
-          };
+          });
 
-          const info = await transporter.sendMail(mailOptions);
           results.push({
             contactId: contact.id.toString(),
             contactName: contact.name || contact.email,
             success: true,
-            messageId: info.messageId
+            messageId: response.message_ids?.[0] || 'sent'
           });
         } catch (error) {
           results.push({
@@ -99,20 +95,18 @@ router.post('/send', auth, async (req, res) => {
       return res.status(400).json({ message: 'Client does not have an email address' });
     }
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: clientData.email,
+    const response = await mailtrap.send({
+      from: { name: senderName, email: senderEmail },
+      to: [{ email: clientData.email }],
       subject: subject || 'Message from Marketing Platform',
       text: text || html,
       html: html
-    };
-
-    const info = await transporter.sendMail(mailOptions);
+    });
 
     res.json({
       success: true,
-      messageId: info.messageId,
-      response: info.response
+      messageId: response.message_ids?.[0] || 'sent',
+      response: 'Email sent successfully'
     });
   } catch (error) {
     console.error('Email Error:', error);
@@ -123,9 +117,9 @@ router.post('/send', auth, async (req, res) => {
 // Send bulk email to customer contacts
 router.post('/send-bulk', auth, async (req, res) => {
   try {
-    const transporter = getTransporter();
-    if (!transporter) {
-      return res.status(500).json({ message: 'Email credentials not configured' });
+    const mailtrap = getMailtrapClient();
+    if (!mailtrap) {
+      return res.status(500).json({ message: 'Mailtrap API token not configured' });
     }
 
     const { clientId, subject, html, text, contactIds } = req.body;
@@ -161,26 +155,28 @@ router.post('/send-bulk', auth, async (req, res) => {
       return res.status(400).json({ message: 'No customer contacts found for this client' });
     }
 
+    // Get sender email from environment or use default
+    const senderEmail = process.env.MAILTRAP_SENDER_EMAIL || 'noreply@dominantlogic.tech';
+    const senderName = process.env.MAILTRAP_SENDER_NAME || 'Marketing Platform';
+
     const results = [];
 
     for (const contact of contacts) {
       try {
-        const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: contact.email,
+        const response = await mailtrap.send({
+          from: { name: senderName, email: senderEmail },
+          to: [{ email: contact.email }],
           subject: subject || 'Message from Marketing Platform',
           text: text || html,
           html: html
-        };
-
-        const info = await transporter.sendMail(mailOptions);
+        });
 
         results.push({
           contactId: contact.id.toString(),
           contactName: contact.name || contact.email,
           email: contact.email,
           success: true,
-          messageId: info.messageId
+          messageId: response.message_ids?.[0] || 'sent'
         });
       } catch (error) {
         results.push({
