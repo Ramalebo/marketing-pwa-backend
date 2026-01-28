@@ -33,7 +33,8 @@ const User = sequelize.define('User', {
   },
   isMainUser: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false
+    defaultValue: false,
+    field: 'is_main_user'
   },
   createdBy: {
     type: DataTypes.INTEGER,
@@ -41,15 +42,18 @@ const User = sequelize.define('User', {
     references: {
       model: 'Users',
       key: 'id'
-    }
+    },
+    field: 'created_by'
   },
   isActive: {
     type: DataTypes.BOOLEAN,
-    defaultValue: true
+    defaultValue: true,
+    field: 'is_active'
   }
 }, {
   tableName: 'users',
   timestamps: true,
+  underscored: true,
   hooks: {
     beforeCreate: async (user) => {
       if (user.password) {
