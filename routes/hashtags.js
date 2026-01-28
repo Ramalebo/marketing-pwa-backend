@@ -12,11 +12,12 @@ const openai = process.env.OPENROUTER_API_KEY
   : null;
 
 // Fallback models in order of preference
+// Using confirmed available free models on OpenRouter
 const FALLBACK_MODELS = [
   process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free',
-  'google/gemini-flash-1.5:free',
   'liquidai/lfm2.5-1.2b-instruct:free',
-  'xai/grok-beta:free'
+  'xai/grok-beta:free',
+  'meta-llama/llama-3.1-8b-instruct:free'
 ];
 
 // Helper function to try multiple models with fallback
@@ -28,8 +29,9 @@ const tryWithFallback = async (models, requestFn) => {
       return await requestFn(model);
     } catch (error) {
       lastError = error;
-      if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit')) {
-        console.log(`Model ${model} rate-limited, trying next fallback...`);
+      if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit') ||
+          error.status === 404 || error.message?.includes('No endpoints found') || error.message?.includes('not found')) {
+        console.log(`Model ${model} unavailable (${error.status || error.code}), trying next fallback...`);
         continue;
       }
       throw error;
@@ -103,6 +105,13 @@ router.post('/generate', auth, async (req, res) => {
       return res.status(429).json({ 
         message: 'AI service is currently busy. Please try again in a few moments. Free models have rate limits.',
         retryAfter: 60
+      });
+    }
+    
+    if (error.status === 404 || error.message?.includes('No endpoints found') || error.message?.includes('not found')) {
+      return res.status(503).json({ 
+        message: 'AI model temporarily unavailable. Please try again in a moment. The system will automatically try alternative models.',
+        retryAfter: 30
       });
     }
     
