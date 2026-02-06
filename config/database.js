@@ -2,7 +2,11 @@ const path = require('path');
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const useSqlite = process.env.USE_SQLITE === 'true' || process.env.DB_DIALECT === 'sqlite';
+// Use SQLite if: USE_SQLITE is set (true/1/yes), or DB_DIALECT=sqlite, or no DB_HOST (e.g. Render with MySQL vars removed)
+const useSqliteEnv = (process.env.USE_SQLITE || '').toLowerCase();
+const useSqlite = useSqliteEnv === 'true' || useSqliteEnv === '1' || useSqliteEnv === 'yes' ||
+  process.env.DB_DIALECT === 'sqlite' ||
+  !process.env.DB_HOST;
 
 const sqliteStorage = path.join(__dirname, '..', 'data', 'database.sqlite');
 
@@ -34,6 +38,7 @@ const dbLabel = useSqlite ? 'SQLite' : 'MySQL';
 
 const testConnection = async () => {
   try {
+    console.log(`Database mode: ${dbLabel} (USE_SQLITE=${process.env.USE_SQLITE}, DB_HOST=${process.env.DB_HOST || '(not set)'})`);
     if (useSqlite) {
       const fs = require('fs');
       const dataDir = path.dirname(sqliteStorage);
