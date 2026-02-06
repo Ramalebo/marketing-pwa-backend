@@ -30,9 +30,10 @@ const tryWithFallback = async (models, requestFn) => {
     } catch (error) {
       lastError = error;
       if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit') ||
-          error.status === 404 || error.status === 400 ||
+          error.status === 404 || error.status === 400 || error.status === 402 ||
           error.message?.includes('No endpoints found') || error.message?.includes('not found') ||
-          error.message?.includes('not a valid model ID') || error.message?.includes('invalid model')) {
+          error.message?.includes('not a valid model ID') || error.message?.includes('invalid model') ||
+          error.message?.includes('spend limit exceeded') || error.message?.includes('Payment Required')) {
         console.log(`Model ${model} unavailable (${error.status || error.code}), trying next fallback...`);
         continue;
       }
@@ -198,6 +199,13 @@ router.post('/generate', auth, async (req, res) => {
     console.error('AI Generation Error:', error);
     
     // User-friendly error messages
+    if (error.status === 402 || error.message?.includes('spend limit exceeded') || error.message?.includes('Payment Required')) {
+      return res.status(402).json({ 
+        message: 'API spending limit reached. Please check your OpenRouter account settings or wait for the limit to reset. Free models should still work, but the API key may have a spending limit configured.',
+        retryAfter: 3600
+      });
+    }
+    
     if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit')) {
       return res.status(429).json({ 
         message: 'AI service is currently busy. Please try again in a few moments. Free models have rate limits.',

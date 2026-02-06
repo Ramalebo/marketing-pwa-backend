@@ -9,7 +9,7 @@ dotenv.config();
 
 const app = express();
 
-// Connect to MySQL and sync models
+// Connect to database and sync models
 (async () => {
   try {
     await testConnection();

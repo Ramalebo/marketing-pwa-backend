@@ -29,18 +29,18 @@ const tryWithFallback = async (models, requestFn) => {
       return await requestFn(model);
     } catch (error) {
       lastError = error;
-      // If it's a rate limit error or model not found, try next model
       if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit') ||
-          error.status === 404 || error.message?.includes('No endpoints found') || error.message?.includes('not found')) {
+          error.status === 404 || error.status === 400 || error.status === 402 ||
+          error.message?.includes('No endpoints found') || error.message?.includes('not found') ||
+          error.message?.includes('not a valid model ID') || error.message?.includes('invalid model') ||
+          error.message?.includes('spend limit exceeded') || error.message?.includes('Payment Required')) {
         console.log(`Model ${model} unavailable (${error.status || error.code}), trying next fallback...`);
         continue;
       }
-      // For other errors, throw immediately
       throw error;
     }
   }
   
-  // If all models failed, throw the last error
   throw lastError;
 };
 
@@ -123,6 +123,13 @@ router.post('/chat', auth, async (req, res) => {
     console.error('Chatbot Error:', error);
     
     // User-friendly error messages
+    if (error.status === 402 || error.message?.includes('spend limit exceeded') || error.message?.includes('Payment Required')) {
+      return res.status(402).json({ 
+        message: 'API spending limit reached. Please check your OpenRouter account settings or wait for the limit to reset. Free models should still work, but the API key may have a spending limit configured.',
+        retryAfter: 3600
+      });
+    }
+    
     if (error.status === 429 || error.code === 'rate_limit_exceeded' || error.message?.includes('rate-limit')) {
       return res.status(429).json({ 
         message: 'AI service is currently busy. Please try again in a few moments. Free models have rate limits.',
@@ -130,7 +137,7 @@ router.post('/chat', auth, async (req, res) => {
       });
     }
     
-    if (error.status === 404 || error.status === 400 || 
+    if (error.status === 404 || error.status === 400 ||
         error.message?.includes('No endpoints found') || error.message?.includes('not found') ||
         error.message?.includes('not a valid model ID') || error.message?.includes('invalid model')) {
       return res.status(503).json({ 
