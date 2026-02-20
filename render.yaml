@@ -1,0 +1,9 @@
+# Render Blueprint – backend runs from backend/ folder
+# Fixes: Cannot find module '.../src/server.js' (use rootDir: backend)
+services:
+  - type: web
+    name: marketing-pwa-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start

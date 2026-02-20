@@ -64,6 +64,15 @@ Your `frontend\dist` build already includes an `.htaccess` – upload it with th
 - Env vars (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, SMTP_*, etc.) are set in **Render → Your service → Environment**.
 - Do **not** set USE_SQLITE on Render; with DB_HOST set it uses MySQL.
 
+### Fix: "Cannot find module .../src/server.js"
+The server lives in **backend/** not **src/**. In Render Dashboard:
+1. Open your **Web Service** → **Settings**.
+2. Set **Root Directory** to **`backend`** (not `src`, not empty).
+3. **Build Command:** `npm install`
+4. **Start Command:** `npm start`
+5. Save and trigger **Manual Deploy**.  
+The repo root also has a **render.yaml** so Blueprint deploys use `rootDir: backend`.
+
 ---
 
 ## Quick recap
