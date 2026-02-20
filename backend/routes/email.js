@@ -15,12 +15,13 @@ const getSmtpTransporter = () => {
   if (!host || !user || !pass) return null;
   const port = parseInt(process.env.SMTP_PORT || '465', 10);
   const secure = port === 465;
+  const insecureTls = (process.env.SMTP_INSECURE_TLS || '').toLowerCase() === 'true';
   return nodemailer.createTransport({
     host,
     port,
     secure,
     auth: { user, pass },
-    tls: { rejectUnauthorized: process.env.NODE_ENV === 'production' }
+    tls: { rejectUnauthorized: !insecureTls }
   });
 };
 
@@ -29,22 +30,30 @@ const getMailtrapClient = () => {
   return new MailtrapClient({ token: process.env.MAILTRAP_API_TOKEN });
 };
 
-const getSender = () => ({
-  email: process.env.SMTP_USER || process.env.MAILTRAP_SENDER_EMAIL || 'noreply@dominantlogic.tech',
-  name: process.env.SMTP_SENDER_NAME || process.env.MAILTRAP_SENDER_NAME || 'Marketing Platform'
-});
+const getSender = () => {
+  const name = (process.env.SMTP_SENDER_NAME || process.env.MAILTRAP_SENDER_NAME || 'Marketing Platform')
+    .replace(/^["']|["']$/g, '')
+    .trim();
+  return {
+    email: process.env.SMTP_USER || process.env.MAILTRAP_SENDER_EMAIL || 'noreply@dominantlogic.tech',
+    name: name || 'Marketing Platform'
+  };
+};
 
 // Send one email: prefer domain SMTP, fallback to Mailtrap
 const sendEmail = async (toEmail, subject, html, text, fromEmail, fromName) => {
   const transporter = getSmtpTransporter();
   if (transporter) {
     try {
+      const bodyText = text || html || '';
+      const bodyHtml = html || text || '';
+      const hasContent = (bodyText && bodyText.trim()) || (bodyHtml && bodyHtml.trim());
       const info = await transporter.sendMail({
-        from: `"${fromName}" <${fromEmail}>`,
+        from: `"${(fromName || '').replace(/"/g, '')}" <${fromEmail}>`,
         to: toEmail,
         subject: subject || 'Message from Marketing Platform',
-        text: text || html || '',
-        html: html || text || ''
+        text: hasContent ? (bodyText.trim() || bodyHtml.trim()) : ' ',
+        html: hasContent ? (bodyHtml.trim() || bodyText.trim()) : '<p> </p>'
       });
       return { messageId: info.messageId };
     } catch (err) {

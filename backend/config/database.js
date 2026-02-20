@@ -2,11 +2,9 @@ const path = require('path');
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-// Use SQLite if: USE_SQLITE is set (true/1/yes), or DB_DIALECT=sqlite, or no DB_HOST (e.g. Render with MySQL vars removed)
-const useSqliteEnv = (process.env.USE_SQLITE || '').toLowerCase();
-const useSqlite = useSqliteEnv === 'true' || useSqliteEnv === '1' || useSqliteEnv === 'yes' ||
-  process.env.DB_DIALECT === 'sqlite' ||
-  !process.env.DB_HOST;
+// Use MySQL when DB_HOST is set (Render). Otherwise use SQLite (local dev). On Render: set DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT; do not set USE_SQLITE.
+const hasMySql = !!process.env.DB_HOST;
+const useSqlite = !hasMySql;
 
 const sqliteStorage = path.join(__dirname, '..', 'data', 'database.sqlite');
 

@@ -118,24 +118,23 @@
         </div>
       </v-col>
 
-      <!-- Right: Channel Performance -->
+      <!-- Right: Channel Performance (card layout to match design) -->
       <v-col cols="12" md="5" lg="6">
         <div class="app-section">
           <h2 class="app-section-title">Channel Performance</h2>
-          <div class="app-card channel-card">
+          <div class="channel-performance-cards">
             <div
               v-for="(channel, idx) in channelPerformance"
               :key="channel.name"
-              class="channel-item"
-              :class="{ 'channel-item-last': idx === channelPerformance.length - 1 }"
+              class="channel-perf-card"
             >
-              <v-avatar :color="channel.iconBg" size="44" rounded class="channel-icon">
+              <div class="channel-perf-icon" :style="{ background: channel.iconBg }">
                 <v-icon :color="channel.iconColor" size="24">{{ channel.icon }}</v-icon>
-              </v-avatar>
-              <div class="channel-body">
-                <div class="channel-value">{{ channel.value }}</div>
-                <span class="channel-change">+{{ channel.change }}</span>
-                <div class="channel-desc">{{ channel.description }}</div>
+              </div>
+              <div class="channel-perf-body">
+                <div class="channel-perf-value">{{ channel.value }}</div>
+                <span class="channel-perf-change">+{{ channel.change }}</span>
+                <div class="channel-perf-desc">{{ channel.description }}</div>
               </div>
             </div>
           </div>
@@ -463,52 +462,60 @@ export default {
   background: #fafafa;
 }
 
-.channel-card {
-  padding: 0;
+/* Channel Performance – card layout (Social Media, Email, Display) */
+.channel-performance-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.channel-item {
+.channel-perf-card {
   display: flex;
   align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border-color, #DBDDDC);
-  transition: background 0.15s ease;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #DBDDDC;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s ease;
 }
 
-.channel-item:hover {
-  background: #fafafa;
+.channel-perf-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.channel-item-last {
-  border-bottom: none;
-}
-
-.channel-icon {
+.channel-perf-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   margin-right: 16px;
 }
 
-.channel-body {
+.channel-perf-body {
   min-width: 0;
 }
 
-.channel-value {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+.channel-perf-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
   margin-bottom: 2px;
 }
 
-.channel-change {
-  font-size: 12px;
+.channel-perf-change {
+  font-size: 13px;
   font-weight: 600;
-  color: #1976D2;
+  color: #2E7D32;
   margin-right: 6px;
 }
 
-.channel-desc {
+.channel-perf-desc {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: #69737B;
   margin-top: 4px;
 }
 </style>
