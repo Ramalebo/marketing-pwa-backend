@@ -5,7 +5,7 @@
         <h1 class="display-title">Outdoor Advertising</h1>
         <p class="display-subtitle">Manage billboards, digital screens, and outdoor campaigns</p>
       </div>
-      <v-btn color="primary" variant="elevated" prepend-icon="mdi-plus" @click="openBookLocation">
+      <v-btn color="primary" variant="elevated" prepend-icon="mdi-plus" @click="openAddDialog">
         Book Location
       </v-btn>
     </div>
@@ -58,14 +58,26 @@
       </v-col>
     </v-row>
 
-    <!-- Tabs -->
-    <v-tabs v-model="activeTab" class="display-tabs" bg-color="transparent">
-      <v-tab value="billboards">Billboards</v-tab>
-      <v-tab value="digital">Digital Screens</v-tab>
-      <v-tab value="delivery">Delivery Box Ads</v-tab>
-      <v-tab value="taxi">Taxi/Car Ads</v-tab>
-      <v-tab value="available">Available Locations</v-tab>
-    </v-tabs>
+    <!-- Tabs + Add per type -->
+    <div class="tabs-row">
+      <v-tabs v-model="activeTab" class="display-tabs" bg-color="transparent">
+        <v-tab value="billboards">Billboards</v-tab>
+        <v-tab value="digital">Digital Screens</v-tab>
+        <v-tab value="delivery">Delivery Box Ads</v-tab>
+        <v-tab value="taxi">Taxi/Car Ads</v-tab>
+        <v-tab value="available">Available Locations</v-tab>
+      </v-tabs>
+      <v-btn
+        color="primary"
+        variant="tonal"
+        size="small"
+        :prepend-icon="'mdi-plus'"
+        @click="openAddDialog"
+        class="add-tab-btn"
+      >
+        Add {{ addButtonLabel }}
+      </v-btn>
+    </div>
 
     <!-- Campaign / location cards -->
     <v-row class="cards-row">
@@ -122,7 +134,7 @@
             </div>
           </v-card-text>
           <v-card-actions class="card-actions">
-            <v-btn variant="text" size="small" color="primary" @click="editItem(item)">Edit</v-btn>
+            <v-btn variant="text" size="small" color="primary" @click="openAddDialog(item)">Edit</v-btn>
             <v-spacer />
             <v-btn icon variant="text" size="small" color="error" @click="deleteItem(item)">
               <v-icon size="18">mdi-delete-outline</v-icon>
@@ -137,11 +149,166 @@
         <v-card class="empty-state" elevation="0">
           <v-icon size="64" color="grey-lighten-1" class="mb-3">mdi-billboard</v-icon>
           <div class="text-h6 mb-2">No outdoor campaigns yet</div>
-          <p class="text-body-2 text-medium-emphasis mb-4">Create display ads and set channel to Display to see them here, or book a location.</p>
-          <v-btn color="primary" variant="elevated" prepend-icon="mdi-plus" @click="openBookLocation">Book Location</v-btn>
+          <p class="text-body-2 text-medium-emphasis mb-4">Add a location with the button above—choose the tab (Billboards, Digital Screens, etc.) then click "Add" or "Book Location".</p>
+          <v-btn color="primary" variant="elevated" prepend-icon="mdi-plus" @click="openAddDialog">Add location</v-btn>
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- Add / Edit location dialog -->
+    <v-dialog v-model="addDialog" max-width="600" persistent scrollable>
+      <v-card>
+        <v-card-title class="d-flex align-center pa-4">
+          <v-icon class="mr-2">mdi-map-marker-plus</v-icon>
+          {{ editingId ? 'Edit location' : 'Add location' }}
+          <v-spacer />
+          <v-btn icon variant="text" @click="closeAddDialog"><v-icon>mdi-close</v-icon></v-btn>
+        </v-card-title>
+        <v-card-text class="pa-4 pt-0">
+          <v-form ref="addForm" v-model="addFormValid">
+            <v-select
+              v-model="addForm.displayType"
+              :items="displayTypeItems"
+              item-title="title"
+              item-value="value"
+              label="Type"
+              density="comfortable"
+              variant="outlined"
+              hide-details
+              class="mb-3"
+            />
+            <v-text-field
+              v-model="addForm.title"
+              label="Title (e.g. Highway 101 - North)"
+              required
+              density="comfortable"
+              variant="outlined"
+              hide-details
+              class="mb-3"
+            />
+            <v-text-field
+              v-model="addForm.location"
+              label="Location (e.g. San Francisco, CA)"
+              density="comfortable"
+              variant="outlined"
+              hide-details
+              class="mb-3"
+            />
+            <v-row dense>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="addForm.size"
+                  label="Size (e.g. 14x48 ft)"
+                  density="comfortable"
+                  variant="outlined"
+                  hide-details
+                  class="mb-3"
+                />
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="addForm.period"
+                  label="Period (e.g. 3 months)"
+                  density="comfortable"
+                  variant="outlined"
+                  hide-details
+                  class="mb-3"
+                />
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model.number="addForm.impressionsPerDay"
+                  label="Impressions per day"
+                  type="number"
+                  min="0"
+                  density="comfortable"
+                  variant="outlined"
+                  hide-details
+                  class="mb-3"
+                  placeholder="125000"
+                />
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model.number="addForm.spend"
+                  label="Cost per month ($)"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  density="comfortable"
+                  variant="outlined"
+                  hide-details
+                  class="mb-3"
+                  placeholder="8500"
+                />
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="addForm.startDate"
+                  label="Start date"
+                  type="date"
+                  density="comfortable"
+                  variant="outlined"
+                  hide-details
+                  class="mb-3"
+                />
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="addForm.endDate"
+                  label="End date"
+                  type="date"
+                  density="comfortable"
+                  variant="outlined"
+                  hide-details
+                  class="mb-3"
+                />
+              </v-col>
+            </v-row>
+            <v-text-field
+              v-model="addForm.reach"
+              label="Reach (optional, total)"
+              type="number"
+              min="0"
+              density="comfortable"
+              variant="outlined"
+              hide-details
+              class="mb-3"
+            />
+            <v-select
+              v-model="addForm.status"
+              :items="[{ title: 'Draft', value: 'draft' }, { title: 'Pending', value: 'pending' }, { title: 'Active', value: 'published' }]"
+              item-title="title"
+              item-value="value"
+              label="Status"
+              density="comfortable"
+              variant="outlined"
+              hide-details
+              class="mb-3"
+            />
+            <v-textarea
+              v-model="addForm.description"
+              label="Description (optional)"
+              rows="2"
+              density="comfortable"
+              variant="outlined"
+              hide-details
+            />
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="pa-4 pt-0">
+          <v-spacer />
+          <v-btn variant="text" @click="closeAddDialog">Cancel</v-btn>
+          <v-btn color="primary" variant="elevated" :loading="addSaving" @click="saveAddForm">
+            {{ editingId ? 'Save' : 'Add location' }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -156,16 +323,51 @@ const TAB_TO_DISPLAY_TYPE = {
   available: null
 };
 
+const DISPLAY_TYPE_LABELS = {
+  billboard: 'Billboard',
+  digital: 'Digital Screen',
+  delivery: 'Delivery Box Ad',
+  taxi: 'Taxi/Car Ad'
+};
+
 export default {
   name: 'Display',
   data() {
     return {
       activeTab: 'billboards',
       items: [],
-      loading: false
+      loading: false,
+      addDialog: false,
+      addFormValid: false,
+      addSaving: false,
+      editingId: null,
+      addForm: {
+        displayType: 'billboard',
+        title: '',
+        location: '',
+        size: '',
+        period: '',
+        impressionsPerDay: null,
+        spend: null,
+        startDate: null,
+        endDate: null,
+        reach: null,
+        status: 'draft',
+        description: ''
+      },
+      displayTypeItems: [
+        { title: 'Billboards', value: 'billboard' },
+        { title: 'Digital Screens', value: 'digital' },
+        { title: 'Delivery Box Ads', value: 'delivery' },
+        { title: 'Taxi/Car Ads', value: 'taxi' }
+      ]
     };
   },
   computed: {
+    addButtonLabel() {
+      const t = TAB_TO_DISPLAY_TYPE[this.activeTab];
+      return t ? DISPLAY_TYPE_LABELS[t] || 'Location' : 'Location';
+    },
     kpis() {
       const active = this.items.filter(a => ['published', 'approved', 'pending'].includes(a.status));
       const totalReach = active.reduce((acc, a) => acc + (Number(a.reach) || 0), 0);
@@ -233,11 +435,87 @@ export default {
         this.loading = false;
       }
     },
-    openBookLocation() {
-      this.$router.push({ name: 'Ads', query: { channel: 'display' } });
+    openAddDialog(item = null) {
+      this.editingId = item ? item.id : null;
+      if (item) {
+        this.addForm = {
+          displayType: item.displayType || 'billboard',
+          title: item.title || '',
+          location: item.location || '',
+          size: item.size || '',
+          period: item.period || '',
+          impressionsPerDay: item.impressionsPerDay != null ? Number(item.impressionsPerDay) : null,
+          spend: item.spend != null ? Number(item.spend) : null,
+          startDate: item.startDate || null,
+          endDate: item.endDate || null,
+          reach: item.reach != null ? Number(item.reach) : null,
+          status: item.status || 'draft',
+          description: item.description || ''
+        };
+      } else {
+        const displayType = TAB_TO_DISPLAY_TYPE[this.activeTab] || 'billboard';
+        this.addForm = {
+          displayType,
+          title: '',
+          location: '',
+          size: '',
+          period: '',
+          impressionsPerDay: null,
+          spend: null,
+          startDate: null,
+          endDate: null,
+          reach: null,
+          status: 'draft',
+          description: ''
+        };
+      }
+      this.addDialog = true;
     },
-    editItem(item) {
-      this.$router.push({ name: 'Ads', query: { edit: item.id } });
+    closeAddDialog() {
+      this.addDialog = false;
+      this.editingId = null;
+    },
+    async saveAddForm() {
+      if (!this.addForm.title || !this.addForm.title.trim()) {
+        this.$store.dispatch('showSnackbar', { text: 'Please enter a title', color: 'error' });
+        return;
+      }
+      this.addSaving = true;
+      try {
+        const payload = {
+          channel: 'display',
+          displayType: this.addForm.displayType || 'billboard',
+          title: this.addForm.title.trim(),
+          location: this.addForm.location ? this.addForm.location.trim() : null,
+          size: this.addForm.size ? this.addForm.size.trim() : null,
+          period: this.addForm.period ? this.addForm.period.trim() : null,
+          impressionsPerDay: this.addForm.impressionsPerDay != null ? Number(this.addForm.impressionsPerDay) : null,
+          spend: this.addForm.spend != null ? Number(this.addForm.spend) : null,
+          startDate: this.addForm.startDate || null,
+          endDate: this.addForm.endDate || null,
+          reach: this.addForm.reach != null ? Number(this.addForm.reach) : null,
+          status: this.addForm.status || 'draft',
+          description: this.addForm.description ? this.addForm.description.trim() : null,
+          type: 'image',
+          content: { images: [], videos: [], text: '' }
+        };
+        if (this.editingId) {
+          await axios.put(`/ads/${this.editingId}`, payload);
+          this.$store.dispatch('showSnackbar', { text: 'Location updated', color: 'success' });
+        } else {
+          await axios.post('/ads', payload);
+          this.$store.dispatch('showSnackbar', { text: 'Location added', color: 'success' });
+        }
+        this.closeAddDialog();
+        await this.loadItems();
+      } catch (e) {
+        this.$store.dispatch('showSnackbar', {
+          text: e.response?.data?.message || 'Failed to save',
+          color: 'error'
+        });
+      } finally {
+        this.addSaving = false;
+      }
     },
     deleteItem(item) {
       if (!confirm(`Delete "${item.title}"?`)) return;
@@ -321,13 +599,26 @@ export default {
   color: #6b7280;
 }
 
-.display-tabs {
+.tabs-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
   margin-bottom: 24px;
+}
+
+.display-tabs {
+  flex: 1;
+  min-width: 0;
 }
 
 .display-tabs :deep(.v-tab) {
   font-weight: 500;
   text-transform: none;
+}
+
+.add-tab-btn {
+  flex-shrink: 0;
 }
 
 .cards-row { margin-top: 0; }
