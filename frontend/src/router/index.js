@@ -66,6 +66,11 @@ const routes = [
     component: () => import('../views/PostHistory.vue')
   },
   {
+    path: '/display',
+    name: 'Display',
+    component: () => import('../views/Display.vue')
+  },
+  {
     path: '/search',
     name: 'Search',
     component: () => import('../views/Search.vue')

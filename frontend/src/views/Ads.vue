@@ -268,6 +268,144 @@
                   class="mt-4"
                   style="background: #ffffff;"
                 ></v-select>
+                <v-select
+                  v-model="form.channel"
+                  :items="channelOptions"
+                  item-title="title"
+                  item-value="value"
+                  label="Channel"
+                  density="default"
+                  variant="outlined"
+                  hide-details
+                  class="mt-4"
+                  style="background: #ffffff;"
+                ></v-select>
+                <template v-if="form.channel === 'display'">
+                  <v-select
+                    v-model="form.displayType"
+                    :items="displayTypeOptions"
+                    item-title="title"
+                    item-value="value"
+                    label="Display type"
+                    density="default"
+                    variant="outlined"
+                    hide-details
+                    class="mt-4"
+                    style="background: #ffffff;"
+                  ></v-select>
+                  <v-text-field
+                    v-model="form.location"
+                    label="Location (e.g. San Francisco, CA)"
+                    density="default"
+                    variant="outlined"
+                    hide-details
+                    class="mt-4"
+                    style="background: #ffffff;"
+                  ></v-text-field>
+                  <v-row class="mt-4">
+                    <v-col cols="12" sm="6">
+                      <v-text-field
+                        v-model="form.size"
+                        label="Size (e.g. 14x48 ft)"
+                        density="default"
+                        variant="outlined"
+                        hide-details
+                        style="background: #ffffff;"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                      <v-text-field
+                        v-model="form.period"
+                        label="Period (e.g. 3 months)"
+                        density="default"
+                        variant="outlined"
+                        hide-details
+                        style="background: #ffffff;"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row class="mt-2">
+                    <v-col cols="12" sm="4">
+                      <v-text-field
+                        v-model.number="form.impressionsPerDay"
+                        label="Impressions/day"
+                        type="number"
+                        min="0"
+                        density="default"
+                        variant="outlined"
+                        hide-details
+                        style="background: #ffffff;"
+                        placeholder="e.g. 125000"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4">
+                      <v-text-field
+                        v-model="form.startDate"
+                        label="Start date"
+                        type="date"
+                        density="default"
+                        variant="outlined"
+                        hide-details
+                        style="background: #ffffff;"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4">
+                      <v-text-field
+                        v-model="form.endDate"
+                        label="End date"
+                        type="date"
+                        density="default"
+                        variant="outlined"
+                        hide-details
+                        style="background: #ffffff;"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </template>
+                <v-row class="mt-4">
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      v-model.number="form.reach"
+                      label="Reach"
+                      type="number"
+                      min="0"
+                      density="default"
+                      variant="outlined"
+                      hide-details
+                      style="background: #ffffff;"
+                      placeholder="e.g. 125000"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      v-model.number="form.engagement"
+                      label="Engagement %"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      density="default"
+                      variant="outlined"
+                      hide-details
+                      style="background: #ffffff;"
+                      placeholder="e.g. 4.2"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      v-model.number="form.spend"
+                      label="Spend (R)"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      density="default"
+                      variant="outlined"
+                      hide-details
+                      style="background: #ffffff;"
+                      placeholder="e.g. 18500"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
                 <v-textarea
                   v-model="form.content.text"
                   label="Ad Text"
@@ -610,12 +748,35 @@ export default {
         description: '',
         type: 'image',
         clientId: null,
+        channel: 'social',
+        displayType: 'billboard',
+        reach: null,
+        engagement: null,
+        spend: null,
+        location: null,
+        size: null,
+        period: null,
+        impressionsPerDay: null,
+        startDate: null,
+        endDate: null,
         content: {
           images: [],
           videos: [],
           text: ''
         }
       },
+      channelOptions: [
+        { title: 'Social Media', value: 'social' },
+        { title: 'Email Marketing', value: 'email' },
+        { title: 'Display Ads', value: 'display' },
+        { title: 'Search Ads', value: 'search' }
+      ],
+      displayTypeOptions: [
+        { title: 'Billboards', value: 'billboard' },
+        { title: 'Digital Screens', value: 'digital' },
+        { title: 'Delivery Box Ads', value: 'delivery' },
+        { title: 'Taxi/Car Ads', value: 'taxi' }
+      ],
       publishDialog: false,
       publishingAd: null,
       selectedPlatforms: [],
@@ -671,6 +832,17 @@ export default {
           description: ad.description || '',
           type: ad.type || 'image',
           clientId: ad.clientId?.id || ad.clientId?._id || null,
+          channel: ad.channel || 'social',
+          displayType: ad.displayType || 'billboard',
+          reach: ad.reach != null ? Number(ad.reach) : null,
+          engagement: ad.engagement != null ? Number(ad.engagement) : null,
+          spend: ad.spend != null ? Number(ad.spend) : null,
+          location: ad.location || null,
+          size: ad.size || null,
+          period: ad.period || null,
+          impressionsPerDay: ad.impressionsPerDay != null ? Number(ad.impressionsPerDay) : null,
+          startDate: ad.startDate || null,
+          endDate: ad.endDate || null,
           content: ad.content || { images: [], videos: [], text: '' }
         };
         this.tab = 'manual';
@@ -686,13 +858,24 @@ export default {
         description: '',
         type: 'image',
         clientId: null,
+        channel: 'social',
+        displayType: 'billboard',
+        reach: null,
+        engagement: null,
+        spend: null,
+        location: null,
+        size: null,
+        period: null,
+        impressionsPerDay: null,
+        startDate: null,
+        endDate: null,
         content: {
           images: [],
           videos: [],
           text: ''
         }
       };
-      this.generateForm = {
+    this.generateForm = {
         prompt: '',
         clientId: null,
         type: 'image'

@@ -49,8 +49,8 @@
           <template v-slot:prepend><v-icon :color="$route.name === 'Email' ? 'primary' : undefined" icon="mdi-email" size="20" class="nav-icon"></v-icon></template>
           <v-list-item-title>Email</v-list-item-title>
         </v-list-item>
-        <v-list-item :to="{ name: 'Ads' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Ads' }">
-          <template v-slot:prepend><v-icon :color="$route.name === 'Ads' ? 'primary' : undefined" icon="mdi-monitor" size="20" class="nav-icon"></v-icon></template>
+        <v-list-item :to="{ name: 'Display' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Display' }">
+          <template v-slot:prepend><v-icon :color="$route.name === 'Display' ? 'primary' : undefined" icon="mdi-monitor" size="20" class="nav-icon"></v-icon></template>
           <v-list-item-title>Display</v-list-item-title>
         </v-list-item>
         <v-list-item :to="{ name: 'Search' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Search' }">
@@ -175,6 +175,7 @@ export default {
       const names = {
         Dashboard: 'Dashboard Overview',
         Ads: 'Campaigns',
+        Display: 'Outdoor Advertising',
         Insights: 'Analytics',
         Clients: 'Clients',
         Notes: 'Notes',
@@ -190,7 +191,9 @@ export default {
       return names[this.$route.name] || this.$route.name || 'Dashboard Overview';
     },
     pageSubtitle() {
-      return this.$route.name === 'Dashboard' ? 'Monitor your multi-channel marketing performance' : '';
+      if (this.$route.name === 'Dashboard') return 'Monitor your multi-channel marketing performance';
+      if (this.$route.name === 'Display') return 'Manage billboards, digital screens, and outdoor campaigns';
+      return '';
     },
     userInitial() {
       const name = this.user?.name || 'U';

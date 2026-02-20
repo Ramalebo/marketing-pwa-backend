@@ -70,6 +70,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/clients', require('./routes/clients'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/ads', require('./routes/ads'));
+app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/insights', require('./routes/insights'));
 app.use('/api/chatbot', require('./routes/chatbot'));
 app.use('/api/sms', require('./routes/sms'));

@@ -62,6 +62,66 @@ const Ad = sequelize.define('Ad', {
     type: DataTypes.ENUM('draft', 'pending', 'approved', 'published', 'archived'),
     defaultValue: 'draft'
   },
+  channel: {
+    type: DataTypes.STRING(32),
+    allowNull: true,
+    defaultValue: 'social'
+  },
+  reach: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: 0
+  },
+  engagement: {
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: true,
+    defaultValue: 0,
+    get() {
+      const v = this.getDataValue('engagement');
+      return v != null ? Number(v) : 0;
+    }
+  },
+  spend: {
+    type: DataTypes.DECIMAL(12, 2),
+    allowNull: true,
+    defaultValue: 0,
+    get() {
+      const v = this.getDataValue('spend');
+      return v != null ? Number(v) : 0;
+    }
+  },
+  displayType: {
+    type: DataTypes.STRING(32),
+    allowNull: true,
+    field: 'display_type'
+  },
+  location: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  size: {
+    type: DataTypes.STRING(64),
+    allowNull: true
+  },
+  period: {
+    type: DataTypes.STRING(64),
+    allowNull: true
+  },
+  impressionsPerDay: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'impressions_per_day'
+  },
+  startDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'start_date'
+  },
+  endDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'end_date'
+  },
   clientId: {
     type: DataTypes.INTEGER,
     allowNull: true,

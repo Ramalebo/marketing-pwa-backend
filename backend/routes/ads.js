@@ -47,9 +47,23 @@ const tryWithFallback = async (models, requestFn) => {
 // Helper to transform ad data
 const transformAd = (ad) => {
   const data = ad.toJSON();
+  const reach = data.reach != null ? Number(data.reach) : 0;
+  const engagement = data.engagement != null ? Number(data.engagement) : 0;
+  const spend = data.spend != null ? Number(data.spend) : 0;
   return {
     ...data,
     id: data.id.toString(),
+    reach,
+    engagement,
+    spend,
+    channel: data.channel || 'social',
+    displayType: data.displayType || null,
+    location: data.location || null,
+    size: data.size || null,
+    period: data.period || null,
+    impressionsPerDay: data.impressionsPerDay != null ? Number(data.impressionsPerDay) : null,
+    startDate: data.startDate || null,
+    endDate: data.endDate || null,
     clientId: data.client ? {
       _id: data.client.id.toString(),
       name: data.client.name,
@@ -73,17 +87,29 @@ const transformAdInput = (body) => {
     data.contentText = data.content.text || '';
     delete data.content;
   }
+  if (data.reach != null) data.reach = parseInt(data.reach, 10) || 0;
+  if (data.engagement != null) data.engagement = parseFloat(data.engagement) || 0;
+  if (data.spend != null) data.spend = parseFloat(data.spend) || 0;
+  if (data.channel != null) data.channel = String(data.channel).slice(0, 32) || 'social';
+  if (data.displayType !== undefined) data.displayType = data.displayType ? String(data.displayType).slice(0, 32) : null;
+  if (data.location !== undefined) data.location = data.location ? String(data.location).slice(0, 255) : null;
+  if (data.size !== undefined) data.size = data.size ? String(data.size).slice(0, 64) : null;
+  if (data.period !== undefined) data.period = data.period ? String(data.period).slice(0, 64) : null;
+  if (data.impressionsPerDay !== undefined) data.impressionsPerDay = data.impressionsPerDay != null ? parseInt(data.impressionsPerDay, 10) : null;
+  if (data.startDate !== undefined) data.startDate = data.startDate || null;
+  if (data.endDate !== undefined) data.endDate = data.endDate || null;
   return data;
 };
 
 // Get all ads
 router.get('/', optionalAuth, async (req, res) => {
   try {
-    const { status, clientId } = req.query;
+    const { status, clientId, channel } = req.query;
     const where = { createdBy: req.user.id };
     
     if (status) where.status = status;
     if (clientId) where.clientId = clientId;
+    if (channel) where.channel = channel;
 
     const ads = await Ad.findAll({
       where,
