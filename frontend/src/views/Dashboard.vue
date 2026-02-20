@@ -9,7 +9,7 @@
           </div>
           <div class="kpi-content">
             <div class="kpi-value">{{ kpis.totalReach }}</div>
-            <div class="kpi-change" :class="parseFloat(kpis.totalReachChange) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.totalReachChange) }} from last period</div>
+            <div class="kpi-change" :class="(parseFloat(kpis.totalReachChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.totalReachChange) }} from last period</div>
             <div class="kpi-label">Total Reach</div>
           </div>
         </div>
@@ -21,7 +21,7 @@
           </div>
           <div class="kpi-content">
             <div class="kpi-value">{{ kpis.engagementRate }}</div>
-            <div class="kpi-change" :class="parseFloat(kpis.engagementChange) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.engagementChange) }} from last period</div>
+            <div class="kpi-change" :class="(parseFloat(kpis.engagementChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.engagementChange) }} from last period</div>
             <div class="kpi-label">Engagement Rate</div>
           </div>
         </div>
@@ -33,7 +33,7 @@
           </div>
           <div class="kpi-content">
             <div class="kpi-value">{{ kpis.conversionRate }}</div>
-            <div class="kpi-change" :class="parseFloat(kpis.conversionChange) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.conversionChange) }} from last period</div>
+            <div class="kpi-change" :class="(parseFloat(kpis.conversionChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.conversionChange) }} from last period</div>
             <div class="kpi-label">Conversion Rate</div>
           </div>
         </div>
@@ -45,7 +45,7 @@
           </div>
           <div class="kpi-content">
             <div class="kpi-value">{{ kpis.totalSpend }}</div>
-            <div class="kpi-change" :class="parseFloat(kpis.totalSpendChange) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.totalSpendChange) }} from last period</div>
+            <div class="kpi-change" :class="(parseFloat(kpis.totalSpendChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.totalSpendChange) }} from last period</div>
             <div class="kpi-label">Ad Spend</div>
           </div>
         </div>
@@ -144,7 +144,7 @@
               </div>
               <div class="channel-perf-body">
                 <div class="channel-perf-value">{{ channel.value }}</div>
-                <span class="channel-perf-change">{{ formatChange(channel.change) }}</span>
+                <span class="channel-perf-change">{{ formatChange(channel.change) || '+0%' }}</span>
                 <div class="channel-perf-desc">{{ channel.description }}</div>
               </div>
             </div>
@@ -213,6 +213,13 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcEleme
 
 const PAGE_SIZE = 5;
 
+const DEFAULT_CHANNEL_PERFORMANCE = [
+  { name: 'Social Media', value: '0', change: '0%', description: 'Facebook, Instagram, Twitter', icon: 'mdi-share-variant', iconBg: '#E3F2FD', iconColor: '#2196F3' },
+  { name: 'Email Marketing', value: '0', change: '0%', description: 'Newsletter, Campaigns', icon: 'mdi-email', iconBg: '#E8F5E9', iconColor: '#4CAF50' },
+  { name: 'Display Ads', value: '0', change: '0%', description: 'Banner, Native, Video', icon: 'mdi-monitor', iconBg: '#F3E5F5', iconColor: '#9C27B0' },
+  { name: 'Search Ads', value: '0', change: '0%', description: 'Google, Bing', icon: 'mdi-magnify', iconBg: '#FFF3E0', iconColor: '#FF9800' }
+];
+
 export default {
   name: 'Dashboard',
   components: { Line, Doughnut },
@@ -231,7 +238,7 @@ export default {
         totalSpend: 'R0',
         totalSpendChange: '0'
       },
-      channelPerformance: [],
+      channelPerformance: [...DEFAULT_CHANNEL_PERFORMANCE],
       aiInsight: { type: 'Budget Allocation', message: 'Loading…' },
       trend: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], reach: [0, 0, 0, 0], engagement: [0, 0, 0, 0] },
       distribution: { labels: ['Social Media', 'Email', 'Display', 'Search'], values: [100, 0, 0, 0] },
@@ -252,15 +259,48 @@ export default {
           }
         }
       },
-      doughnutOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } },
-        cutout: '60%'
-      }
     };
   },
   computed: {
+    doughnutOptions() {
+      const values = this.distribution.values || [];
+      const total = values.reduce((a, b) => a + b, 0);
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              generateLabels: (chart) => {
+                const data = chart.data;
+                if (!data.datasets || !data.datasets[0]) return [];
+                const ds = data.datasets[0];
+                return (data.labels || []).map((label, i) => {
+                  const value = ds.data[i];
+                  const pct = total > 0 ? Math.round((Number(value) / total) * 100) : 0;
+                  return {
+                    text: `${label} (${pct}%)`,
+                    fillStyle: ds.backgroundColor[i],
+                    index: i
+                  };
+                });
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const value = ctx.raw;
+                const pct = total > 0 ? Math.round((Number(value) / total) * 100) : 0;
+                return `${ctx.label}: ${pct}%`;
+              }
+            }
+          }
+        }
+      };
+    },
     lineData() {
       return {
         labels: this.trend.labels,
@@ -303,7 +343,7 @@ export default {
       if (val == null || val === '') return '+0%';
       const s = String(val).replace(/%/g, '').trim();
       const n = parseFloat(s);
-      if (Number.isNaN(n)) return String(val).includes('%') ? val : val + '%';
+      if (Number.isNaN(n)) return '+0%';
       const prefix = n >= 0 ? '+' : '';
       return `${prefix}${n}%`;
     },
@@ -322,7 +362,7 @@ export default {
       try {
         const { data } = await axios.get('/dashboard');
         this.kpis = data.kpis || this.kpis;
-        this.channelPerformance = data.channelPerformance || [];
+        this.channelPerformance = (data.channelPerformance && data.channelPerformance.length) ? data.channelPerformance : [...DEFAULT_CHANNEL_PERFORMANCE];
         this.aiInsight = data.aiInsight || this.aiInsight;
         if (data.trend) {
           this.trend = { labels: data.trend.labels || this.trend.labels, reach: data.trend.reach || this.trend.reach, engagement: data.trend.engagement || this.trend.engagement };
@@ -332,6 +372,7 @@ export default {
         }
       } catch (e) {
         console.error('Error loading dashboard:', e);
+        this.channelPerformance = [...DEFAULT_CHANNEL_PERFORMANCE];
       }
     },
     async loadCampaigns() {
