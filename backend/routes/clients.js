@@ -1,0 +1,168 @@
+const express = require('express');
+const { Client } = require('../models');
+const { optionalAuth } = require('../middleware/auth');
+const { Op } = require('sequelize');
+
+const router = express.Router();
+
+// Helper function to transform client data
+const transformClient = (client) => {
+  const data = client.toJSON();
+  // Handle tags - convert array to comma-separated string for display
+  let tagsDisplay = '';
+  if (data.tags) {
+    if (Array.isArray(data.tags)) {
+      tagsDisplay = data.tags.join(', ');
+    } else if (typeof data.tags === 'string') {
+      try {
+        const parsed = JSON.parse(data.tags);
+        tagsDisplay = Array.isArray(parsed) ? parsed.join(', ') : data.tags;
+      } catch {
+        tagsDisplay = data.tags;
+      }
+    }
+  }
+  return {
+    ...data,
+    id: data.id.toString(),
+    tags: tagsDisplay,
+    socialMedia: {
+      facebook: data.socialMediaFacebook,
+      instagram: data.socialMediaInstagram,
+      twitter: data.socialMediaTwitter,
+      linkedin: data.socialMediaLinkedin,
+      website: data.socialMediaWebsite
+    },
+    location: {
+      address: data.locationAddress,
+      city: data.locationCity,
+      state: data.locationState,
+      country: data.locationCountry,
+      zipCode: data.locationZipCode,
+      coordinates: {
+        lat: data.locationLat,
+        lng: data.locationLng
+      }
+    }
+  };
+};
+
+// Helper function to transform request body to database format
+const transformClientInput = (body) => {
+  const data = { ...body };
+  if (data.socialMedia) {
+    data.socialMediaFacebook = data.socialMedia.facebook;
+    data.socialMediaInstagram = data.socialMedia.instagram;
+    data.socialMediaTwitter = data.socialMedia.twitter;
+    data.socialMediaLinkedin = data.socialMedia.linkedin;
+    data.socialMediaWebsite = data.socialMedia.website;
+    delete data.socialMedia;
+  }
+  if (data.location) {
+    data.locationAddress = data.location.address;
+    data.locationCity = data.location.city;
+    data.locationState = data.location.state;
+    data.locationCountry = data.location.country;
+    data.locationZipCode = data.location.zipCode;
+    if (data.location.coordinates) {
+      data.locationLat = data.location.coordinates.lat;
+      data.locationLng = data.location.coordinates.lng;
+    }
+    delete data.location;
+  }
+  // Handle tags - convert string to array if needed
+  if (data.tags) {
+    if (typeof data.tags === 'string') {
+      // If it's a comma-separated string, convert to array
+      data.tags = data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+    }
+    // If it's already an array, keep it as is
+  }
+  return data;
+};
+
+// Get all clients
+router.get('/', optionalAuth, async (req, res) => {
+  try {
+    const clients = await Client.findAll({
+      where: { createdBy: req.user.id },
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(clients.map(transformClient));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get single client
+router.get('/:id', optionalAuth, async (req, res) => {
+  try {
+    const client = await Client.findOne({
+      where: { 
+        id: req.params.id, 
+        createdBy: req.user.id 
+      }
+    });
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+    res.json(transformClient(client));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Create client
+router.post('/', optionalAuth, async (req, res) => {
+  try {
+    const clientData = transformClientInput(req.body);
+    const client = await Client.create({
+      ...clientData,
+      createdBy: req.user.id
+    });
+    res.status(201).json(transformClient(client));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Update client
+router.put('/:id', optionalAuth, async (req, res) => {
+  try {
+    const clientData = transformClientInput(req.body);
+    const client = await Client.findOne({
+      where: { 
+        id: req.params.id, 
+        createdBy: req.user.id 
+      }
+    });
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+    await client.update(clientData);
+    res.json(transformClient(client));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Delete client
+router.delete('/:id', optionalAuth, async (req, res) => {
+  try {
+    const client = await Client.findOne({
+      where: { 
+        id: req.params.id, 
+        createdBy: req.user.id 
+      }
+    });
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+    await client.destroy();
+    res.json({ message: 'Client deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+module.exports = router;

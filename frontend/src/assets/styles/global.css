@@ -1,0 +1,722 @@
+/* Professional Design System - Global Styles */
+
+/* Typography – Inter, consistent weights */
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary, #1a1a1a);
+}
+
+/* Professional Color Palette – aligned with DRA design tokens */
+:root {
+  --primary: #9CCB48;
+  --primary-dark: #77A12E;
+  --primary-light: #C4E091;
+  --primary-lightest: #EBF5DA;
+  --secondary: #69737B;
+  --background: #FEFEFE;
+  --surface: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --text-primary: #1a1a1a;
+  --text-secondary: #69737B;
+  --text-tertiary: #9ca3af;
+  --border: #DBDDDC;
+  --border-light: #F3F4F6;
+  --success: #9CCB48;
+  --error: #79232E;
+  --warning: #DD8E38;
+  --info: #2196F3;
+}
+
+/* Professional Spacing & Page Layout */
+.v-container {
+  max-width: 1400px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Consistent page wrapper for all views */
+.app-page {
+  min-height: 100vh;
+  background: var(--light-bg, #FEFEFE);
+  padding: 0;
+}
+
+/* Section blocks */
+.app-section {
+  margin-bottom: 28px;
+}
+
+.app-section:last-child {
+  margin-bottom: 0;
+}
+
+.app-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+/* Professional card for content blocks */
+.app-card {
+  background: var(--surface, #FFFFFF);
+  border-radius: 8px;
+  border: 1px solid var(--border, #DBDDDC);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease;
+}
+
+.app-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Page view layout - for list/detail pages */
+.page-view {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.page-view__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-view__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1a1a1a);
+  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+}
+
+.page-view__subtitle {
+  font-size: 14px;
+  color: var(--text-secondary, #69737B);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.page-view__action {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.page-view__content {
+  margin-bottom: 24px;
+}
+
+.content-card {
+  border-radius: 8px;
+  border: 1px solid var(--border, #DBDDDC);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.content-card__title {
+  background: #fafafa;
+  border-bottom: 1px solid var(--border, #DBDDDC);
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  min-height: 56px;
+}
+
+/* Card Enhancements */
+.v-card {
+  border-radius: 8px !important;
+  border: 1px solid var(--border, #DBDDDC) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.v-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Button Enhancements */
+.v-btn {
+  text-transform: none !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.v-btn--elevated {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+.v-btn--elevated:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Input Field Enhancements */
+.v-field {
+  border-radius: 8px !important;
+}
+
+.v-field__input {
+  font-size: 14px !important;
+}
+
+/* Fix input field borders - remove horizontal lines */
+.v-field__outline {
+  border: 1px solid #E5E7EB !important;
+  border-radius: 8px !important;
+}
+
+/* Remove all internal border segments that create horizontal lines */
+.v-field__outline__start,
+.v-field__outline__notch,
+.v-field__outline__end {
+  display: none !important;
+}
+
+/* Use a single clean border */
+.v-field__outline {
+  border: 1px solid #E5E7EB !important;
+  border-radius: 8px !important;
+}
+
+.v-field--focused .v-field__outline {
+  border: 2px solid var(--primary) !important;
+}
+
+/* Ensure label doesn't create notch issues */
+.v-field--variant-outlined .v-field__outline__start,
+.v-field--variant-outlined .v-field__outline__notch,
+.v-field--variant-outlined .v-field__outline__end {
+  display: none !important;
+}
+
+/* Clean input appearance */
+.v-text-field .v-field,
+.v-select .v-field,
+.v-textarea .v-field {
+  background-color: #FFFFFF !important;
+}
+
+.v-field__input {
+  padding: 12px 16px !important;
+  min-height: 44px !important;
+  line-height: 1.5 !important;
+}
+
+/* Ensure form fields are properly aligned */
+.v-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.v-form > * {
+  margin-bottom: 0 !important;
+}
+
+/* Fix spacing between form fields */
+.v-text-field + .v-text-field,
+.v-text-field + .v-select,
+.v-select + .v-text-field,
+.v-select + .v-select,
+.v-textarea + .v-text-field,
+.v-text-field + .v-textarea {
+  margin-top: 16px !important;
+}
+
+/* Fix label positioning */
+.v-label {
+  font-size: 14px !important;
+  color: #6B7280 !important;
+  font-weight: 500 !important;
+}
+
+.v-field--focused .v-label {
+  color: var(--primary) !important;
+}
+
+/* Professional Empty States */
+.empty-state {
+  padding: 64px 32px;
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.empty-state-subtitle {
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: 24px;
+}
+
+/* Professional Page Headers */
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+  letter-spacing: -0.03em;
+}
+
+.page-header p {
+  font-size: 15px;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Professional Sidebar */
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid #E5E7EB;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F9FAFB 100%);
+}
+
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* List Item Enhancements – only for in-page lists (not overlays; overlays in overlay-fix.css) */
+.v-list-item {
+  border-radius: 8px !important;
+  margin-bottom: 4px !important;
+  transition: all 0.2s ease !important;
+  color: #1a1a1a !important;
+}
+
+.v-list-item .v-list-item-title,
+.v-list-item .v-list-item-subtitle {
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+
+.v-list-item:hover {
+  background-color: #E3F2FD !important;
+}
+
+.v-list-item:hover .v-list-item-title,
+.v-list-item:hover .v-list-item-subtitle,
+.v-list-item:hover .v-icon {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+}
+
+.v-list-item--active {
+  background: #E3F2FD !important;
+  color: #1565C0 !important;
+  border-left: 3px solid #2196F3 !important;
+  padding-left: 9px !important;
+}
+
+.v-list-item--active .v-icon,
+.v-list-item--active .v-list-item-title,
+.v-list-item--active .v-list-item-subtitle {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+}
+
+/* Sidebar nav: always visible link names on hover and active */
+.app-drawer .v-list-item,
+.app-sidebar .v-list-item {
+  color: #1a1a1a !important;
+}
+
+/* Ensure overlay stays behind text so labels never disappear */
+.app-drawer .v-list-item .v-list-item__overlay,
+.app-sidebar .v-list-item .v-list-item__overlay {
+  z-index: 0 !important;
+}
+.app-drawer .v-list-item .v-list-item__content,
+.app-sidebar .v-list-item .v-list-item__content,
+.app-drawer .v-list-item .v-list-item-title,
+.app-sidebar .v-list-item .v-list-item-title {
+  position: relative !important;
+  z-index: 1 !important;
+  visibility: visible !important;
+}
+
+.app-drawer .v-list-item .v-list-item-title,
+.app-sidebar .v-list-item .v-list-item-title {
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+
+.app-drawer .v-list-item:hover,
+.app-sidebar .v-list-item:hover {
+  background-color: #E3F2FD !important;
+}
+
+.app-drawer .v-list-item:hover .v-list-item-title,
+.app-sidebar .v-list-item:hover .v-list-item-title,
+.app-drawer .v-list-item:hover .v-icon,
+.app-sidebar .v-list-item:hover .v-icon {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.app-drawer .v-list-item--active,
+.app-sidebar .v-list-item--active {
+  background: #E3F2FD !important;
+  color: #1565C0 !important;
+}
+
+.app-drawer .v-list-item--active .v-list-item-title,
+.app-sidebar .v-list-item--active .v-list-item-title,
+.app-drawer .v-list-item--active .v-icon,
+.app-sidebar .v-list-item--active .v-icon {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.app-drawer .v-list-item--active .v-list-item__overlay,
+.app-sidebar .v-list-item--active .v-list-item__overlay {
+  background: #E3F2FD !important;
+  opacity: 1 !important;
+  z-index: 0 !important;
+}
+
+/* Links – always show label on hover, focus, active */
+a,
+router-link,
+.router-link-active {
+  color: #1565C0 !important;
+}
+a:hover,
+a:focus,
+router-link:hover,
+.router-link-active {
+  color: #0D47A1 !important;
+  opacity: 1 !important;
+}
+.section-link,
+.app-card a,
+.page-view a {
+  color: #2196F3 !important;
+}
+.section-link:hover,
+.app-card a:hover,
+.page-view a:hover {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+}
+
+/* Chip Enhancements */
+.v-chip {
+  font-weight: 500 !important;
+  font-size: 12px !important;
+}
+
+/* Professional Dividers */
+.v-divider {
+  border-color: var(--border, #DBDDDC) !important;
+  opacity: 1 !important;
+}
+
+/* Card Title Enhancements */
+.v-card-title {
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  color: var(--text-primary, #1a1a1a) !important;
+}
+
+/* Professional Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F9FAFB;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* Professional Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Main content: do not override v-main padding – Vuetify uses padding-left: var(--v-layout-left)
+   for the drawer so content does not overlap. Our .app-content adds inner spacing. */
+
+/* Professional Focus States */
+.v-field--focused .v-field__outline {
+  border-color: var(--primary) !important;
+  border-width: 2px !important;
+}
+
+/* Professional Table Styles */
+.v-data-table {
+  background: transparent !important;
+}
+
+.v-data-table__thead th {
+  background: #f9fafb !important;
+  color: var(--text-secondary, #69737B) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Professional Dialog Styles */
+.v-dialog > .v-card {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.v-dialog .v-card-title {
+  background: var(--primary);
+  color: white !important;
+  padding: 20px 24px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* ========== Modals: always visible labels, links, list items, dropdowns ========== */
+.v-dialog .v-card-title,
+.v-dialog .v-card-title *,
+.v-dialog .v-card-text,
+.v-dialog .v-card-actions {
+  color: inherit;
+}
+.v-dialog .v-card-text {
+  color: #1a1a1a !important;
+}
+.v-dialog .v-card-text * {
+  opacity: 1 !important;
+}
+
+/* List items inside modals – overlay behind text, labels always visible */
+.v-dialog .v-list-item__overlay {
+  z-index: 0 !important;
+}
+.v-dialog .v-list-item__content,
+.v-dialog .v-list-item-title,
+.v-dialog .v-list-item-subtitle {
+  position: relative !important;
+  z-index: 1 !important;
+  visibility: visible !important;
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+.v-dialog .v-list-item {
+  color: #1a1a1a !important;
+}
+.v-dialog .v-list-item:hover {
+  background: #E3F2FD !important;
+}
+.v-dialog .v-list-item:hover .v-list-item-title,
+.v-dialog .v-list-item:hover .v-list-item-subtitle,
+.v-dialog .v-list-item:hover .v-icon {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.v-dialog .v-list-item--active .v-list-item-title,
+.v-dialog .v-list-item--active .v-list-item-subtitle,
+.v-dialog .v-list-item--active .v-icon {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Buttons in modals – text always visible */
+.v-dialog .v-btn {
+  color: inherit !important;
+}
+.v-dialog .v-btn.v-btn--variant-text,
+.v-dialog .v-btn.v-btn--variant-tonal,
+.v-dialog .v-btn.v-btn--variant-outlined {
+  color: #1565C0 !important;
+}
+.v-dialog .v-btn.v-btn--variant-text:hover,
+.v-dialog .v-btn.v-btn--variant-tonal:hover,
+.v-dialog .v-btn.v-btn--variant-outlined:hover {
+  color: #0D47A1 !important;
+  background: #E3F2FD !important;
+}
+.v-dialog .v-btn.v-btn--variant-elevated,
+.v-dialog .v-btn.v-btn--variant-flat {
+  color: #ffffff !important;
+}
+.v-dialog .v-btn .v-btn__content {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Form fields in modals – labels and input text visible */
+.v-dialog .v-label,
+.v-dialog .v-field__input,
+.v-dialog .v-field .v-field__input {
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+.v-dialog .v-field--focused .v-label {
+  color: #1976D2 !important;
+}
+
+/* Links in modals */
+.v-dialog a {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+}
+.v-dialog a:hover {
+  color: #0D47A1 !important;
+}
+
+/* Select/autocomplete display text in modals */
+.v-dialog .v-select .v-field__input,
+.v-dialog .v-autocomplete .v-field__input,
+.v-dialog .v-combobox .v-field__input {
+  color: #1a1a1a !important;
+}
+.v-dialog .v-select .v-field__input::placeholder,
+.v-dialog .v-autocomplete .v-field__input::placeholder {
+  color: #69737B !important;
+  opacity: 1 !important;
+}
+
+/* Checkbox, radio, switch labels in modals */
+.v-dialog .v-checkbox .v-label,
+.v-dialog .v-radio-group .v-label,
+.v-dialog .v-switch .v-label {
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+.v-dialog .v-selection-control-label {
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+.v-dialog .v-messages {
+  color: #69737B !important;
+  opacity: 1 !important;
+}
+
+/* Professional Badge Styles */
+.v-badge {
+  font-weight: 500;
+}
+
+/* Professional Tooltip */
+.v-tooltip {
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+}
+
+/* Professional Snackbar */
+.v-snackbar {
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  min-width: 320px !important;
+  max-width: 500px !important;
+}
+
+.v-snackbar__content {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 16px 20px !important;
+  align-items: center !important;
+}
+
+.v-snackbar__wrapper {
+  align-items: center !important;
+}
+
+/* Fix snackbar close button contrast */
+.v-snackbar .v-btn {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600 !important;
+  min-width: auto !important;
+  padding: 8px 16px !important;
+}
+
+.v-snackbar .v-btn:hover {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Error snackbar specific styling */
+.v-snackbar--error .v-snackbar__content {
+  color: white !important;
+}
+
+.v-snackbar--error .v-btn {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Overlay/dropdown stacking: see overlay-fix.css (loaded last). */
+
+/* Avoid clipping dropdown menus inside cards */
+.card .card-body,
+.content-card .v-card-text {
+  overflow: visible !important;
+}
+
+/* Responsive Typography */
+@media (max-width: 960px) {
+  .page-header h1 {
+    font-size: 24px;
+  }
+  
+  .page-header p {
+    font-size: 14px;
+  }
+}

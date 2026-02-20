@@ -1,0 +1,134 @@
+/**
+ * Dropdown / overlay fix – dropdowns (v-select, v-menu) must appear on top and never clip.
+ * 1. Overlays teleport to body (attach: false in Vuetify defaults).
+ * 2. Maximum z-index so nothing can cover them.
+ * 3. No overflow clipping on cards that contain selects.
+ */
+
+/* App stays below overlays */
+#app {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+}
+
+/* Body’s overlay container: create stacking context at max z-index */
+body > .v-overlay-container {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 2147483646 !important;
+  pointer-events: none !important;
+  display: block !important;
+  contain: none !important;
+}
+
+/* Overlay panel and content: max z-index, content receives clicks */
+body > .v-overlay-container .v-overlay,
+.v-overlay {
+  z-index: 2147483646 !important;
+  pointer-events: none !important;
+}
+
+body > .v-overlay-container .v-overlay__content,
+.v-overlay__content {
+  z-index: 2147483646 !important;
+  pointer-events: auto !important;
+}
+
+/* Select/autocomplete menu content */
+.v-select__content,
+.v-autocomplete__content,
+.v-combobox__content {
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+}
+
+/* Prevent card content areas from clipping dropdowns if overlay ever renders in-place */
+.card .card-body,
+.card-body,
+.content-card .v-card-text,
+.app-card .v-card-text,
+.v-card-text {
+  overflow: visible !important;
+}
+
+/* ============================================
+   Dropdown / menu – always show link names and labels
+   (hover, focus, active) so text never disappears
+   ============================================ */
+
+/* All overlay content (v-menu, v-select, v-autocomplete, v-combobox) */
+.v-overlay__content .v-list,
+.v-overlay__content .v-list-item,
+.v-select__content .v-list,
+.v-select__content .v-list-item,
+.v-autocomplete__content .v-list,
+.v-autocomplete__content .v-list-item,
+.v-combobox__content .v-list,
+.v-combobox__content .v-list-item {
+  color: #1a1a1a !important;
+}
+
+.v-overlay__content .v-list-item-title,
+.v-overlay__content .v-list-item-subtitle,
+.v-select__content .v-list-item-title,
+.v-select__content .v-list-item-subtitle,
+.v-autocomplete__content .v-list-item-title,
+.v-autocomplete__content .v-list-item-subtitle,
+.v-combobox__content .v-list-item-title,
+.v-combobox__content .v-list-item-subtitle {
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+
+/* Hover: keep background light and text dark */
+.v-overlay__content .v-list-item:hover,
+.v-select__content .v-list-item:hover,
+.v-autocomplete__content .v-list-item:hover,
+.v-combobox__content .v-list-item:hover {
+  background: #E3F2FD !important;
+}
+
+.v-overlay__content .v-list-item:hover .v-list-item-title,
+.v-overlay__content .v-list-item:hover .v-list-item-subtitle,
+.v-overlay__content .v-list-item:hover .v-icon,
+.v-select__content .v-list-item:hover .v-list-item-title,
+.v-select__content .v-list-item:hover .v-list-item-subtitle,
+.v-select__content .v-list-item:hover .v-icon,
+.v-autocomplete__content .v-list-item:hover .v-list-item-title,
+.v-autocomplete__content .v-list-item:hover .v-list-item-subtitle,
+.v-autocomplete__content .v-list-item:hover .v-icon,
+.v-combobox__content .v-list-item:hover .v-list-item-title,
+.v-combobox__content .v-list-item:hover .v-list-item-subtitle,
+.v-combobox__content .v-list-item:hover .v-icon {
+  color: #1565C0 !important;
+  opacity: 1 !important;
+}
+
+/* Focus/active in dropdowns */
+.v-overlay__content .v-list-item--active .v-list-item-title,
+.v-overlay__content .v-list-item--active .v-list-item-subtitle,
+.v-select__content .v-list-item--active .v-list-item-title,
+.v-select__content .v-list-item--active .v-list-item-subtitle {
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+
+/* Ensure overlay list has light background so dark text shows */
+.v-overlay__content .v-list,
+.v-select__content .v-list,
+.v-autocomplete__content .v-list,
+.v-combobox__content .v-list {
+  background: #ffffff !important;
+}
+
+/* Keep all overlay list text opaque so labels are never faded */
+.v-overlay__content .v-list-item *,
+.v-select__content .v-list-item *,
+.v-autocomplete__content .v-list-item *,
+.v-combobox__content .v-list-item * {
+  opacity: 1 !important;
+}

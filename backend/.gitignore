@@ -1,0 +1,7 @@
+node_modules/
+uploads/
+.env
+*.log
+# SQLite database file (optional: remove this line to commit a static/seed database)
+data/*.sqlite
+
