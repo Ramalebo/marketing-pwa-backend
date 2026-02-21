@@ -1,7 +1,7 @@
 /**
  * Dropdown / overlay fix – dialogs, menus, and selects must appear on top and never clip.
  * 1. Overlays teleport to body (attach: false in Vuetify defaults).
- * 2. High z-index so nothing (app bar, cards, etc.) covers them.
+ * 2. Z-index ladder (low to high): #app 0 → overlay-container 99990 → dialog 99991 → menus/selects 100010.
  * 3. No overflow clipping on containers that might contain dropdowns.
  */
 
@@ -11,13 +11,13 @@
   z-index: 0;
 }
 
-/* Overlay container: very high so dropdowns always appear on top of app bar, cards, and dialogs */
+/* Overlay container: high so overlays sit above app content */
 .v-overlay-container {
   z-index: 99990 !important;
   contain: none !important;
 }
 
-/* Dialog overlays stay below menu/select overlays so dropdowns inside dialogs show on top */
+/* Dialog overlays: fixed z-index so menu overlays can sit above them */
 .v-dialog.v-overlay {
   z-index: 99991 !important;
 }
@@ -27,17 +27,26 @@
   box-shadow: none !important;
 }
 
-/* Menu and select dropdown overlays: above dialogs so dropdown lists are visible */
-.v-overlay:not(.v-dialog) {
-  z-index: 99992 !important;
+/* Dialog card/header must not create a stacking context above menu overlays */
+.v-dialog .v-overlay__content .v-card,
+.v-dialog .v-overlay__content .v-card-title {
+  z-index: auto !important;
+  isolation: auto !important;
 }
-.v-overlay__content {
-  z-index: 99992 !important;
+
+/* Menu and select dropdown overlays: MUST be above dialogs so dropdowns inside modals are visible */
+.v-overlay:not(.v-dialog) {
+  z-index: 100010 !important;
+}
+/* Only menu/select overlay content gets high z-index (not dialog content) */
+.v-overlay:not(.v-dialog) > .v-overlay__content {
+  z-index: 100010 !important;
   pointer-events: auto !important;
   background: #ffffff !important;
   color: #1a1a1a !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   border-radius: 8px !important;
+  position: relative !important;
 }
 
 /* Override Vuetify .v-select__content { overflow: hidden } – it was clipping/hiding the list */
@@ -49,7 +58,7 @@
   overflow: visible !important;
   overflow-y: auto !important;
   max-height: min(320px, 60vh) !important;
-  z-index: 99992 !important;
+  z-index: 100010 !important;
   pointer-events: auto !important;
   background: #ffffff !important;
   color: #1a1a1a !important;
@@ -77,12 +86,13 @@
   color: #1a1a1a !important;
 }
 
-/* Prevent dropdown list overlapping the field – add gap so selected value is not hidden */
+/* Prevent dropdown list overlapping the field – clear gap so list never overlaps trigger or next field */
 .v-menu .v-overlay__content,
 .v-select__content,
 .v-autocomplete__content,
 .v-combobox__content {
-  margin-top: 4px !important;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
 }
 
 /* Dropdown list inside overlay – ensure it’s visible and clickable */

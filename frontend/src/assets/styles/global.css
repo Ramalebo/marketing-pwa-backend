@@ -35,11 +35,33 @@ h1, h2, h3, h4, h5, h6 {
   --info: #2196F3;
 }
 
+/* ========== Professional layout – single source for app width & rhythm ========== */
+.app-layout {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+@media (min-width: 600px) {
+  .app-layout { padding-left: 24px; padding-right: 24px; }
+}
+@media (min-width: 960px) {
+  .app-layout { padding-left: 32px; padding-right: 32px; padding-bottom: 48px; }
+}
+
 /* Professional Spacing & Page Layout */
 .v-container {
-  max-width: 1400px !important;
+  max-width: 1320px !important;
   margin-left: auto !important;
   margin-right: auto !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+@media (min-width: 600px) {
+  .v-container { padding-left: 24px !important; padding-right: 24px !important; }
+}
+@media (min-width: 960px) {
+  .v-container { padding-left: 32px !important; padding-right: 32px !important; }
 }
 
 /* Consistent page wrapper for all views */
@@ -49,17 +71,46 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0;
 }
 
-/* Section blocks */
+/* Standard page header block – title, subtitle, primary action (use on every page) */
+.page-header-block {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 0;
+}
+.page-header-block__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1a1a1a);
+  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+  line-height: 1.25;
+}
+.page-header-block__subtitle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary, #69737B);
+  margin: 0;
+  line-height: 1.5;
+}
+.page-header-block__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Section blocks – consistent vertical rhythm */
 .app-section {
   margin-bottom: 28px;
 }
-
 .app-section:last-child {
   margin-bottom: 0;
 }
-
 .app-section-title {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-primary, #1a1a1a);
   margin-bottom: 16px;
@@ -69,20 +120,20 @@ h1, h2, h3, h4, h5, h6 {
 /* Professional card for content blocks */
 .app-card {
   background: var(--surface, #FFFFFF);
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--border, #DBDDDC);
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
-
 .app-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--border, #DBDDDC);
 }
 
 /* Page view layout - for list/detail pages */
 .page-view {
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
 }
 
@@ -92,7 +143,7 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .page-view__title {
@@ -104,7 +155,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-view__subtitle {
-  font-size: 14px;
+  font-size: 0.9375rem;
   color: var(--text-secondary, #69737B);
   margin: 0;
   line-height: 1.5;
@@ -116,7 +167,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-view__content {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .content-card {
@@ -126,19 +177,22 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
+.content-card {
+  border-radius: 10px;
+}
 .content-card__title {
-  background: #fafafa;
+  background: #fafbfc;
   border-bottom: 1px solid var(--border, #DBDDDC);
-  padding: 16px 20px;
-  font-size: 16px;
+  padding: 18px 24px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary, #1a1a1a);
   min-height: 56px;
 }
 
-/* Card Enhancements */
+/* Card Enhancements – aligned with app layout */
 .v-card {
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   border: 1px solid var(--border, #DBDDDC) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
   transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
@@ -202,6 +256,25 @@ h1, h2, h3, h4, h5, h6 {
   display: none !important;
 }
 
+/* Outlined select/text field: keep label clearly above border (no overlap with line) */
+.v-field--variant-outlined .v-label {
+  max-width: calc(100% - 24px) !important;
+}
+.v-field--variant-outlined.v-field--active .v-label,
+.v-field--variant-outlined.v-field--focused .v-label,
+.v-field--variant-outlined.v-field--dirty .v-label {
+  transform: translateY(-22px) scale(0.75) !important;
+  opacity: 1 !important;
+}
+.v-select .v-field--variant-outlined,
+.v-autocomplete .v-field--variant-outlined,
+.v-text-field .v-field--variant-outlined {
+  padding-top: 2px !important;
+}
+.v-field--variant-outlined .v-field__input {
+  min-height: 44px !important;
+}
+
 /* Clean input appearance */
 .v-text-field .v-field,
 .v-select .v-field,
@@ -213,6 +286,11 @@ h1, h2, h3, h4, h5, h6 {
   padding: 12px 16px !important;
   min-height: 44px !important;
   line-height: 1.5 !important;
+}
+
+/* Outlined fields: extra top padding so label never overlaps border */
+.v-field--variant-outlined .v-field__input {
+  padding-top: 14px !important;
 }
 
 /* Prevent select/field value text from being clipped or hidden */
@@ -246,14 +324,56 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0 !important;
 }
 
-/* Fix spacing between form fields */
+/* Fix spacing between form fields – prevent dropdown overlay from overlapping next field */
+.v-form > .v-text-field,
+.v-form > .v-select,
+.v-form > .v-autocomplete,
+.v-form > .v-combobox,
+.v-form > .v-textarea,
+.v-form > .v-checkbox,
+.v-form > .v-radio-group {
+  margin-bottom: 20px !important;
+}
+.v-form > .v-text-field:last-child,
+.v-form > .v-select:last-child,
+.v-form > .v-autocomplete:last-child,
+.v-form > .v-combobox:last-child,
+.v-form > .v-textarea:last-child,
+.v-form > .v-checkbox:last-child,
+.v-form > .v-radio-group:last-child {
+  margin-bottom: 0 !important;
+}
+
 .v-text-field + .v-text-field,
 .v-text-field + .v-select,
 .v-select + .v-text-field,
 .v-select + .v-select,
+.v-autocomplete + .v-select,
+.v-select + .v-autocomplete,
 .v-textarea + .v-text-field,
-.v-text-field + .v-textarea {
-  margin-top: 16px !important;
+.v-text-field + .v-textarea,
+.v-textarea + .v-select,
+.v-select + .v-textarea {
+  margin-top: 20px !important;
+}
+
+/* Form rows: align dropdowns and inputs in grid layouts */
+.v-form .v-row,
+.v-card-text .v-row {
+  align-items: flex-start;
+}
+.v-form .v-row .v-col,
+.v-card-text .v-row .v-col {
+  display: flex;
+  flex-direction: column;
+}
+.v-form .v-row .v-col .v-select,
+.v-form .v-row .v-col .v-text-field,
+.v-form .v-row .v-col .v-autocomplete,
+.v-card-text .v-row .v-col .v-select,
+.v-card-text .v-row .v-col .v-text-field {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* Fix label positioning */
@@ -549,7 +669,28 @@ router-link:hover,
   font-size: 18px;
 }
 
-/* ========== Modals: always visible labels, links, list items, dropdowns ========== */
+/* ========== Modals: professional layout, labels, dropdowns ========== */
+.v-dialog .v-card {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+.v-dialog .v-card-title {
+  padding: 20px 24px !important;
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+}
+.v-dialog .v-card-text {
+  padding: 24px !important;
+  color: #1a1a1a !important;
+}
+.v-dialog .v-card-actions {
+  padding: 16px 24px !important;
+  background: #fafbfc !important;
+  border-top: 1px solid var(--border, #DBDDDC) !important;
+  gap: 10px !important;
+  min-height: 64px !important;
+  align-items: center !important;
+}
 .v-dialog .v-card-title,
 .v-dialog .v-card-title *,
 .v-dialog .v-card-text,
@@ -765,6 +906,38 @@ router-link:hover,
 .card .card-body,
 .content-card .v-card-text {
   overflow: visible !important;
+}
+
+/* Utility: extra spacing after a dropdown so its open list doesn't overlap next field */
+.form-field-spacing {
+  margin-bottom: 4px !important;
+}
+
+/* Dialogs and cards: consistent form field spacing so dropdowns align and don't overlap */
+.v-dialog .v-form > .v-text-field,
+.v-dialog .v-form > .v-select,
+.v-dialog .v-form > .v-autocomplete,
+.v-dialog .v-form > .v-textarea,
+.v-dialog .v-form > .v-checkbox,
+.card-body .v-select,
+.card .v-card-text .v-select {
+  margin-bottom: 20px !important;
+}
+.v-dialog .v-form > .v-text-field:last-child,
+.v-dialog .v-form > .v-select:last-child,
+.v-dialog .v-form > .v-autocomplete:last-child,
+.v-dialog .v-form > .v-textarea:last-child,
+.v-dialog .v-form > .v-checkbox:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Filter sidebars and cards: dropdowns full width and aligned (exclude e.g. chart-select in headers) */
+.card-body .v-select,
+.card .v-card-text .v-select,
+.v-dialog .v-card-text .v-select {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
 }
 
 /* Responsive Typography */

@@ -16,16 +16,25 @@ A comprehensive Progressive Web App for multi-channel marketing with SMS, Email,
 
 ## Tech Stack
 
-- **Frontend**: Vue.js 3, Vuetify 3, Vue Router, Vuex
-- **Backend**: Node.js, Express, In-Memory Storage (POC)
-- **PWA**: Service Worker, Web App Manifest
-- **AI**: OpenAI Integration (optional)
-- **SMS**: Twilio (optional)
-- **Email**: Nodemailer (optional)
+- **Frontend**: Vue.js 3, Vuetify 3, Vue Router, Vuex (PWA with Service Worker)
+- **Backend**: Node.js, Express
+- **Database**: MySQL (production, e.g. Render) or SQLite (local dev)
+- **Email**: Nodemailer (domain SMTP, e.g. mail.dominantlogic.tech)
+- **AI**: OpenRouter (optional; Chatbot, Ad generation, Hashtags)
+- **SMS**: SMSProvider or similar (optional)
 
-**Note:** This is a POC version using in-memory storage. Data will be lost on server restart.
+## Production (Render already in place)
 
-## Installation
+- **Backend** runs on **Render** (Node.js Web Service). Root directory: `backend`. Health check: `/health`.
+- **Database**: MySQL (set `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` in Render Environment).
+- **Frontend** is built and hosted separately (e.g. cPanel at **dominantlogic.tech**). It calls the Render API via `VUE_APP_API_URL`.
+
+**Documentation (Render already in place):**
+- **DEPLOY_TO_RENDER.md** – Render env vars (DB, SMTP, FRONTEND_URL, JWT_SECRET), health check, redeploy and frontend build/upload.
+- **LOCAL_AND_DEPLOY.md** – Run locally and deploy overview (points to DEPLOY_TO_RENDER.md for production).
+- **backend/.env.example** – All optional env vars (OpenRouter, SMS, Facebook/Meta, etc.).
+
+## Installation (local development)
 
 1. Install all dependencies:
 ```bash
@@ -33,21 +42,22 @@ npm run install:all
 ```
 
 2. Set up environment variables:
-- Copy `backend/.env.example` to `backend/.env` and fill in your credentials
+- Copy `backend/.env.example` to `backend/.env` and fill in your credentials (for local: `USE_SQLITE=true` and `JWT_SECRET` are enough to start).
 
 3. Run development servers:
 ```bash
 npm run dev
 ```
-   - Frontend: http://localhost:8080 (uses backend at http://localhost:3000)
-   - See **LOCAL_AND_DEPLOY.md** for local run and deployment steps.
+- Frontend: http://localhost:8080 (uses backend at http://localhost:3000)
+- See **LOCAL_AND_DEPLOY.md** for full local and deployment steps.
 
 ## Project Structure
 
 ```
 AppCode/
 ├── frontend/          # Vue.js frontend application
-├── backend/           # Express.js backend API
+├── backend/           # Express.js backend API (deployed to Render)
+├── render.yaml        # Render blueprint (rootDir: backend)
 ├── package.json       # Root package.json
 └── README.md
 ```

@@ -2,7 +2,8 @@ const path = require('path');
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-// Use MySQL when DB_HOST is set (Render). Otherwise use SQLite (local dev). On Render: set DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT; do not set USE_SQLITE.
+// Use MySQL when DB_HOST is set (Render). Otherwise use SQLite (local dev).
+// On Render: set DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT (3306). Leave USE_SQLITE unset.
 const hasMySql = !!process.env.DB_HOST;
 const useSqlite = !hasMySql;
 
@@ -20,13 +21,17 @@ const sequelize = useSqlite
       process.env.DB_PASSWORD || '',
       {
         host: process.env.DB_HOST || 'localhost',
-        port: process.env.DB_PORT || 3306,
+        port: parseInt(process.env.DB_PORT || '3306', 10),
         dialect: 'mysql',
         logging: process.env.NODE_ENV === 'development' ? console.log : false,
+        timezone: '+00:00',
+        dialectOptions: {
+          connectTimeout: 60000
+        },
         pool: {
           max: 5,
           min: 0,
-          acquire: 30000,
+          acquire: 60000,
           idle: 10000
         }
       }

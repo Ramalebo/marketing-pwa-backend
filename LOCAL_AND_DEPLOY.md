@@ -1,5 +1,9 @@
 # Run Locally & Deploy
 
+**Production:** The backend is already deployed on **Render**. Frontend is at **dominantlogic.tech** (e.g. cPanel). For Render env vars, re-deploys, and health check, see **DEPLOY_TO_RENDER.md**.
+
+---
+
 ## Part 1: Run locally
 
 ### 1. Install dependencies (once)
@@ -38,35 +42,24 @@ The frontend is configured to use `http://localhost:3000/api` when running in de
 
 ## Part 2: Deploy
 
-### Backend (Render)
+### Backend (Render – already in place)
 
-1. **Push backend to GitHub**  
-   Use a repo that contains the **backend** (e.g. `backend/` as root, or your full AppCode with Render set to use `backend` as root).
+The app is set up to run the backend on **Render** with **MySQL** (not SQLite). Use the same GitHub repo with **Root directory:** `backend`.
 
-2. **Create a Web Service on Render**  
-   - [Render Dashboard](https://dashboard.render.com) → New → Web Service  
-   - Connect the GitHub repo  
-   - **Root directory:** `backend` (if repo is full app) or leave blank if repo is backend-only  
+1. **Render Web Service**  
+   - [Render Dashboard](https://dashboard.render.com) → your **marketing-pwa-backend** service  
+   - **Root directory:** `backend`  
    - **Build:** `npm install`  
    - **Start:** `npm start`  
-   - **Plan:** Free  
+   - **Health check:** `https://your-service.onrender.com/health`
 
-3. **Environment variables (Render → Environment)**  
-   Minimum for SQLite:
+2. **Environment variables (Render → Environment)**  
+   When **DB_HOST** is set, the app uses **MySQL**. Do **not** set `USE_SQLITE` on Render.  
+   Required: `NODE_ENV`, `PORT`, `FRONTEND_URL`, `JWT_SECRET`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, and for email: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER_NAME`.  
+   Full list and values: **DEPLOY_TO_RENDER.md** (§ 3.4).
 
-   | Key           | Value                          |
-   |---------------|---------------------------------|
-   | `USE_SQLITE`  | `true`                          |
-   | `NODE_ENV`    | `production`                    |
-   | `PORT`        | `10000`                         |
-   | `JWT_SECRET`  | *(long random secret)*          |
-   | `FRONTEND_URL`| `https://your-frontend-domain.com` |
-
-   Remove any MySQL vars (`DB_HOST`, `DB_USER`, etc.) if using SQLite only.  
-   Add `OPENROUTER_API_KEY`, `MAILTRAP_*`, `SMS_PROVIDER_*` etc. as needed (see `backend/.env.example`).
-
-4. **Deploy**  
-   Render will build and start the service. Note the backend URL (e.g. `https://your-app.onrender.com`).
+3. **Redeploy**  
+   Push to GitHub; Render auto-deploys. Or use Manual Deploy in the dashboard.
 
 ### Frontend (production build → your host)
 
@@ -105,4 +98,4 @@ The frontend is configured to use `http://localhost:3000/api` when running in de
 | Deploy backend | Push to GitHub → Render Web Service → set env vars   |
 | Deploy frontend | Set `VUE_APP_API_URL` → `npm run build` in `frontend` → upload `dist/` |
 
-For more detail: `DEPLOY_NOW_CHECKLIST.md`, `DEPLOY_TO_RENDER.md`, `RENDER_SQLITE_ENV_STEPS.md`.
+For more detail: **DEPLOY_TO_RENDER.md** (Render env vars, MySQL, SMTP, full steps).

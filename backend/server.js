@@ -13,10 +13,10 @@ const app = express();
 (async () => {
   try {
     await testConnection();
-    // Sync database (creates tables if they don't exist)
-    // Use { alter: true } for development, { force: true } to drop and recreate
-    await sequelize.sync({ alter: false });
-    console.log('Database models synchronized');
+    // Sync database: creates tables if missing; alter: true adds missing columns to existing tables (e.g. ads.reach, engagement, spend, channel)
+    const alter = process.env.NODE_ENV !== 'production' || process.env.DB_ALTER === '1';
+    await sequelize.sync({ alter });
+    console.log('Database models synchronized' + (alter ? ' (alter applied)' : ''));
   } catch (error) {
     console.error('Database sync error:', error);
     process.exit(1);
@@ -24,18 +24,21 @@ const app = express();
 })();
 
 // Middleware
-// CORS configuration - allow both development and production origins
+// CORS configuration - allow development and production (Render: set FRONTEND_URL=https://dominantlogic.tech)
 const allowedOrigins = [
   'https://dominantlogic.tech',
+  'https://www.dominantlogic.tech',
   'http://localhost:8080',
   'http://localhost:3000',
   'http://127.0.0.1:8080',
   'http://127.0.0.1:3000'
 ];
 
-// Add FRONTEND_URL from environment if provided
 if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
+  const url = process.env.FRONTEND_URL.replace(/\/$/, '');
+  if (!allowedOrigins.includes(url)) allowedOrigins.push(url);
+  const withWww = url.replace(/^(https?:\/\/)([^/]+)/, '$1www.$2');
+  if (withWww !== url && !allowedOrigins.includes(withWww)) allowedOrigins.push(withWww);
 }
 
 const corsOptions = {
@@ -60,6 +63,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Health check for Render (no auth, no DB required)
+app.get('/health', (req, res) => {
+  res.status(200).json({ ok: true, service: 'marketing-pwa-backend' });
+});
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -89,7 +97,8 @@ app.use('/api/meta', require('./routes/meta-compliance'));
 // This backend only handles API requests
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(Number(PORT), HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
 });
 

@@ -1,5 +1,8 @@
 # Deployment Guide for cPanel (domains.co.za)
 
+> **Current production setup:** Backend runs on **Render** (MySQL, Node.js). Frontend is built and hosted on cPanel (e.g. dominantlogic.tech). For the active deployment process and env vars, see **DEPLOY_TO_RENDER.md** and **LOCAL_AND_DEPLOY.md**.  
+> This guide below is a legacy cPanel-only option (MongoDB references are outdated; the app now uses MySQL/Sequelize).
+
 This guide will help you deploy the Multi-Channel Marketing Platform to your cPanel hosting on domains.co.za.
 
 ## Prerequisites

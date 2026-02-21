@@ -51,7 +51,8 @@
                 clearable
                 density="default"
                 variant="outlined"
-                hide-details
+                hide-details="auto"
+                class="app-select"
                 style="background: #ffffff;"
                 @update:model-value="loadTemplates"
               ></v-select>
@@ -200,8 +201,8 @@
               required
               density="default"
               variant="outlined"
-              hide-details
-              class="mt-4"
+              hide-details="auto"
+              class="app-select mt-4"
               style="background: #ffffff;"
             ></v-select>
             <v-text-field

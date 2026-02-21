@@ -1,5 +1,18 @@
 # Deploy Backend to Render - Complete Guide
 
+**Render is already in place.** Use this doc to check env vars, redeploy, or set up a new Render service. Health check: `https://<your-service>.onrender.com/health`.
+
+## 🚀 Deploy now (quick)
+
+1. **Push code to GitHub** (this repo; branch `main` or `master`).
+2. **Render** → New → **Web Service** → Connect this repo.
+3. **Settings:** Root Directory = `backend`, Build = `npm install`, Start = `npm start`.
+4. **Environment:** Add all variables from the table in § 3.4 (DB_*, SMTP_*, FRONTEND_URL, JWT_SECRET, etc.).
+5. **Create Web Service** – Render will build and deploy. Health check: `https://your-service.onrender.com/health`.
+6. **Frontend:** Set `VUE_APP_API_URL=https://your-service.onrender.com/api` in `frontend/.env.production`, run `npm run build` in `frontend`, then upload `frontend/dist` to your host (e.g. cPanel at dominantlogic.tech).
+
+---
+
 ## 🎯 Goal
 Deploy your Node.js backend to Render (FREE) so it actually runs, then update your frontend to use it.
 
@@ -109,7 +122,7 @@ git push -u origin main
 - **Name**: `marketing-pwa-backend` (or any name)
 - **Region**: Choose closest to you (e.g., `Oregon (US West)`)
 - **Branch**: `main`
-- **Root Directory**: Leave empty (or `backend` if you put backend in a subfolder)
+- **Root Directory**: `backend` (this repo has frontend + backend; Render must run from `backend`)
 - **Runtime**: `Node`
 - **Build Command**: `npm install`
 - **Start Command**: `npm start`
@@ -117,37 +130,30 @@ git push -u origin main
 
 ### 3.4: Add Environment Variables
 
-**Click "Advanced" → "Add Environment Variable"**
+**Click "Environment" in the left sidebar (or "Advanced" → "Add Environment Variable").**
 
-**Add these one by one:**
+**Required – add these (use your real values where indicated):**
 
-```env
-NODE_ENV=production
-PORT=10000
-```
+| Key | Value | Notes |
+|-----|--------|------|
+| `NODE_ENV` | `production` | |
+| `PORT` | `10000` | Render sets this automatically; add if missing |
+| `FRONTEND_URL` | `https://dominantlogic.tech` | For CORS |
+| `JWT_SECRET` | (choose a long random string) | e.g. `openssl rand -hex 32` |
+| `DB_HOST` | `169.239.218.62` | Your MySQL host |
+| `DB_PORT` | `3306` | |
+| `DB_NAME` | `dominan1_marketing_pwa` | |
+| `DB_USER` | `dominan1_Onka` | |
+| `DB_PASSWORD` | (your MySQL password) | |
+| `SMTP_HOST` | `mail.dominantlogic.tech` | For email |
+| `SMTP_PORT` | `465` | |
+| `SMTP_USER` | `info@dominantlogic.tech` | |
+| `SMTP_PASSWORD` | (your email password) | |
+| `SMTP_SENDER_NAME` | `dominant logic` | Display name for sent emails |
 
-**Then add your MySQL database credentials:**
+**Do not set `USE_SQLITE`** on Render. When `DB_HOST` is set, the app uses MySQL.
 
-```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=dominan1_marketing_pwa
-DB_USER=dominan1_Onka
-DB_PASSWORD=43MYhu32bBJ5qmc
-```
-
-**Then add:**
-
-```env
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-FRONTEND_URL=https://dominantlogic.tech
-```
-
-**⚠️ Important:** 
-- Render's free tier MySQL might be different. You may need to:
-  - Use your cPanel MySQL (if it allows external connections)
-  - OR create a MySQL database on Render
-  - OR use a free MySQL service like PlanetScale, Railway, or Aiven
+**Optional:** `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (AI features); `SMS_PROVIDER_*` (SMS); Facebook/Meta vars for social posting.
 
 ### 3.5: Create the Service
 

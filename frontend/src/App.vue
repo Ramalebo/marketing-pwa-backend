@@ -106,7 +106,7 @@
 
     <v-main class="app-main">
       <div class="app-content">
-        <div class="content-container app-page">
+        <div class="app-layout content-container app-page">
           <router-view />
         </div>
       </div>
@@ -305,6 +305,22 @@ export default {
 
 .sidebar-footer {
   border-top: 1px solid var(--border-color, #DBDDDC);
+  padding: 16px 20px;
+}
+.sidebar-footer-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary, #69737B);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.sidebar-footer-item:hover {
+  background: #f3f4f6;
+  color: var(--text-primary, #1a1a1a);
 }
 
 .app-bar {

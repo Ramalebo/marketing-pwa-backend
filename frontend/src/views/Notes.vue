@@ -47,7 +47,8 @@
                 clearable
                 density="default"
                 variant="outlined"
-                hide-details
+                hide-details="auto"
+                class="app-select"
                 style="background: #ffffff;"
                 @update:model-value="loadNotes"
               ></v-select>
@@ -60,8 +61,8 @@
                 clearable
                 density="default"
                 variant="outlined"
-                hide-details
-                class="mt-4"
+                hide-details="auto"
+                class="app-select mt-4"
                 style="background: #ffffff;"
                 @update:model-value="loadNotes"
               ></v-select>
@@ -218,7 +219,7 @@
           ></v-btn>
         </v-card-title>
         <v-card-text class="pa-6" style="overflow-y: auto; flex: 1;">
-          <v-form ref="form" v-model="valid">
+          <v-form ref="form" v-model="valid" class="form-dialog-fields">
             <v-text-field
               v-model="form.title"
               label="Title"
@@ -248,8 +249,8 @@
               clearable
               density="default"
               variant="outlined"
-              hide-details
-              class="mt-4"
+              hide-details="auto"
+              class="app-select mt-4"
               style="background: #ffffff;"
             ></v-select>
             <v-select
@@ -260,8 +261,8 @@
               label="Category"
               density="default"
               variant="outlined"
-              hide-details
-              class="mt-4"
+              hide-details="auto"
+              class="app-select mt-4"
               style="background: #ffffff;"
             ></v-select>
             <v-select
@@ -272,8 +273,8 @@
               label="Priority"
               density="default"
               variant="outlined"
-              hide-details
-              class="mt-4"
+              hide-details="auto"
+              class="app-select mt-4"
               style="background: #ffffff;"
             ></v-select>
             <v-checkbox

@@ -27,6 +27,4 @@ services:
         sync: false
       - key: FRONTEND_URL
         value: https://dominantlogic.tech
-      # Use SQLite (no external DB). Set USE_SQLITE=true in Render dashboard and omit DB_* vars.
-      - key: USE_SQLITE
-        value: "true"
+      # Do not set USE_SQLITE on Render. Set DB_HOST (and DB_*) to use MySQL.

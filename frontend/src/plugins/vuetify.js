@@ -6,19 +6,19 @@ export default createVuetify({
   components,
   directives,
   defaults: {
-    /* Teleport to body so dropdown menus show on top; z-index matches overlay-fix.css */
+    /* Teleport to body so dropdown menus always show above modals; z-index matches overlay-fix.css */
     VSelect: {
-      menuProps: { attach: false, zIndex: 99992, contentClass: 'dra-select-menu' }
+      menuProps: { attach: false, zIndex: 100010, contentClass: 'dra-select-menu' }
     },
     VMenu: {
       attach: false,
-      zIndex: 99992
+      zIndex: 100010
     },
     VAutocomplete: {
-      menuProps: { attach: false, zIndex: 99992, contentClass: 'dra-select-menu' }
+      menuProps: { attach: false, zIndex: 100010, contentClass: 'dra-select-menu' }
     },
     VCombobox: {
-      menuProps: { attach: false, zIndex: 99992, contentClass: 'dra-select-menu' }
+      menuProps: { attach: false, zIndex: 100010, contentClass: 'dra-select-menu' }
     },
     VDialog: {
       zIndex: 99991

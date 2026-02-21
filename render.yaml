@@ -1,5 +1,5 @@
 # Render Blueprint – backend runs from backend/ folder
-# Fixes: Cannot find module '.../src/server.js' (use rootDir: backend)
+# Set env vars in Render Dashboard (Environment) – do not commit secrets here
 services:
   - type: web
     name: marketing-pwa-backend
@@ -7,3 +7,33 @@ services:
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://dominantlogic.tech
+      # MySQL (set in Dashboard – when DB_HOST is set, MySQL is used)
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      # SMTP (set in Dashboard for email)
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_SENDER_NAME
+        sync: false
+      - key: JWT_SECRET
+        sync: false

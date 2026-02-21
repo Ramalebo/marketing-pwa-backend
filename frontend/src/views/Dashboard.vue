@@ -61,10 +61,10 @@
             <v-select
               v-model="performanceRange"
               :items="['Last 7 days', 'Last 30 days', 'Last 90 days']"
-              density="compact"
-              hide-details
+              density="default"
+              hide-details="auto"
               variant="outlined"
-              class="chart-select"
+              class="chart-select app-select"
             />
           </div>
           <div class="chart-wrap">

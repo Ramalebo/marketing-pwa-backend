@@ -44,7 +44,8 @@
                     clearable
                     density="default"
                     variant="outlined"
-                    hide-details
+                    hide-details="auto"
+                    class="app-select"
                     style="background: #ffffff;"
                     @update:model-value="loadCustomerContacts"
                   ></v-select>
@@ -72,9 +73,9 @@
                   label="Search contacts..."
                   variant="outlined"
                   density="compact"
-                  hide-details
+                  hide-details="auto"
+                  class="app-select mb-4"
                   clearable
-                  class="mb-4"
                   style="max-width: 400px;"
                   @update:model-value="filterContacts"
                 ></v-text-field>
@@ -169,7 +170,7 @@
               <span class="text-h6 font-weight-semibold" style="color: #1a1a1a;">Send Email Campaign</span>
             </v-card-title>
             <v-card-text class="pa-6">
-              <v-form @submit.prevent="sendEmail">
+              <v-form @submit.prevent="sendEmail" class="form-dialog-fields">
                 <v-select
                   v-model="selectedClient"
                   :items="clients"
@@ -180,7 +181,8 @@
                   required
                   density="default"
                   variant="outlined"
-                  hide-details
+                  hide-details="auto"
+                  class="app-select"
                   style="background: #ffffff;"
                   @update:model-value="loadCustomerContactsForSending"
                 ></v-select>
@@ -223,8 +225,8 @@
                   prepend-inner-icon="mdi-account-multiple"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 >
                   <template v-slot:item="{ props, item }">
@@ -247,8 +249,8 @@
                   prepend-inner-icon="mdi-file-document"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                   @update:model-value="loadTemplate"
                 >
@@ -268,8 +270,8 @@
                   required
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-text-field>
 
@@ -279,8 +281,8 @@
                   rows="4"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-textarea>
 
@@ -290,8 +292,8 @@
                   rows="8"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-textarea>
 
@@ -343,7 +345,8 @@
               prepend-inner-icon="mdi-account"
               density="default"
               variant="outlined"
-              hide-details
+              hide-details="auto"
+              class="app-select"
               style="background: #ffffff;"
             ></v-text-field>
             <v-text-field
@@ -364,8 +367,8 @@
               prepend-inner-icon="mdi-phone"
               density="default"
               variant="outlined"
-              hide-details
-              class="mt-4"
+              hide-details="auto"
+              class="app-select mt-4"
               style="background: #ffffff;"
             ></v-text-field>
             <v-textarea
@@ -375,8 +378,8 @@
               prepend-inner-icon="mdi-note-text"
               density="default"
               variant="outlined"
-              hide-details
-              class="mt-4"
+              hide-details="auto"
+              class="app-select mt-4"
               style="background: #ffffff;"
             ></v-textarea>
           </v-form>
@@ -397,7 +400,7 @@
             variant="elevated"
             style="font-weight: 600; text-transform: none; letter-spacing: 0.3px;"
           >
-            {{ editingContact ? 'Update' : 'Add' }}
+            Save
           </v-btn>
         </v-card-actions>
       </v-card>

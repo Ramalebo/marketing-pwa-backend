@@ -31,7 +31,8 @@
                 clearable
                 density="default"
                 variant="outlined"
-                hide-details
+                hide-details="auto"
+                class="app-select"
                 @update:model-value="loadPostHistory"
               ></v-select>
             </div>

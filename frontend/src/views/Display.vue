@@ -201,10 +201,10 @@
                 item-title="label"
                 item-value="value"
                 label="Method"
-                density="compact"
+                density="default"
                 variant="outlined"
-                hide-details
-                class="mb-3"
+                hide-details="auto"
+                class="app-select mb-3"
               />
               <v-text-field
                 v-model.number="calcArea"
@@ -235,10 +235,10 @@
                 item-title="title"
                 item-value="value"
                 label="Weather"
-                density="compact"
+                density="default"
                 variant="outlined"
-                hide-details
-                class="mb-3"
+                hide-details="auto"
+                class="app-select mb-3"
               />
             </div>
             <div class="calculator-result">
@@ -346,10 +346,10 @@
               item-value="value"
               label="Display type"
               placeholder="Select type"
-              density="comfortable"
+              density="default"
               variant="outlined"
-              hide-details
-              class="add-location-field mb-4"
+              hide-details="auto"
+              class="app-select add-location-field mb-4"
             />
             <v-text-field
               v-model="addForm.title"
@@ -463,10 +463,10 @@
               item-title="title"
               item-value="value"
               label="Status"
-              density="comfortable"
+              density="default"
               variant="outlined"
-              hide-details
-              class="add-location-field mb-4"
+              hide-details="auto"
+              class="app-select add-location-field mb-4"
             />
             <v-textarea
               v-model="addForm.description"
@@ -483,10 +483,8 @@
         <v-divider />
         <v-card-actions class="add-location-actions">
           <v-spacer />
-          <v-btn variant="text" @click="closeAddDialog">Cancel</v-btn>
-          <v-btn color="primary" variant="elevated" :loading="addSaving" @click="saveAddForm">
-            {{ editingId ? 'Save' : 'Add location' }}
-          </v-btn>
+          <v-btn variant="text" @click="closeAddDialog" style="font-weight: 500; text-transform: none;">Cancel</v-btn>
+          <v-btn color="primary" variant="elevated" :loading="addSaving" @click="saveAddForm" style="font-weight: 600; text-transform: none; letter-spacing: 0.3px;">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

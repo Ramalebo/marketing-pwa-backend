@@ -152,7 +152,7 @@
           ></v-btn>
         </v-card-title>
         <v-card-text class="pa-6" style="overflow-y: auto; flex: 1;">
-          <v-form ref="form" v-model="valid">
+          <v-form ref="form" v-model="valid" class="form-dialog-fields">
             <v-text-field
               v-model="form.name"
               label="Name"
@@ -169,6 +169,7 @@
               density="default"
               variant="outlined"
               hide-details="auto"
+              class="mt-4"
               :disabled="!!editingUser"
             ></v-text-field>
             <v-text-field
@@ -180,6 +181,7 @@
               density="default"
               variant="outlined"
               hide-details="auto"
+              class="mt-4"
             ></v-text-field>
             <v-select
               v-model="form.role"
@@ -190,11 +192,13 @@
               density="default"
               variant="outlined"
               hide-details="auto"
+              class="mt-4"
             ></v-select>
             <v-checkbox
               v-model="form.isActive"
               label="Active"
               hide-details
+              class="mt-4"
               style="color: #374151;"
             ></v-checkbox>
           </v-form>

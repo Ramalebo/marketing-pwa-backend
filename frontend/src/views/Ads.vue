@@ -181,7 +181,8 @@
                   clearable
                   density="default"
                   variant="outlined"
-                  hide-details
+                  hide-details="auto"
+                  class="app-select"
                   style="background: #ffffff;"
                 ></v-select>
                 <v-select
@@ -192,8 +193,8 @@
                   label="Ad Type"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-select>
                 <v-textarea
@@ -203,8 +204,8 @@
                   required
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-textarea>
                 <v-btn
@@ -229,7 +230,8 @@
                   required
                   density="default"
                   variant="outlined"
-                  hide-details
+                  hide-details="auto"
+                  class="app-select"
                   style="background: #ffffff;"
                 ></v-text-field>
                 <v-textarea
@@ -238,8 +240,8 @@
                   rows="3"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-textarea>
                 <v-select
@@ -251,8 +253,8 @@
                   required
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-select>
                 <v-select
@@ -264,8 +266,8 @@
                   clearable
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-select>
                 <v-select
@@ -276,8 +278,8 @@
                   label="Channel"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-select>
                 <template v-if="form.channel === 'display'">
@@ -289,8 +291,8 @@
                     label="Display type"
                     density="default"
                     variant="outlined"
-                    hide-details
-                    class="mt-4"
+                    hide-details="auto"
+                    class="app-select mt-4"
                     style="background: #ffffff;"
                   ></v-select>
                   <v-text-field
@@ -298,8 +300,8 @@
                     label="Location (e.g. San Francisco, CA)"
                     density="default"
                     variant="outlined"
-                    hide-details
-                    class="mt-4"
+                    hide-details="auto"
+                    class="app-select mt-4"
                     style="background: #ffffff;"
                   ></v-text-field>
                   <v-row class="mt-4">
@@ -309,7 +311,8 @@
                         label="Size (e.g. 14x48 ft)"
                         density="default"
                         variant="outlined"
-                        hide-details
+                        hide-details="auto"
+                        class="app-select"
                         style="background: #ffffff;"
                       ></v-text-field>
                     </v-col>
@@ -319,7 +322,8 @@
                         label="Period (e.g. 3 months)"
                         density="default"
                         variant="outlined"
-                        hide-details
+                        hide-details="auto"
+                        class="app-select"
                         style="background: #ffffff;"
                       ></v-text-field>
                     </v-col>
@@ -333,7 +337,8 @@
                         min="0"
                         density="default"
                         variant="outlined"
-                        hide-details
+                        hide-details="auto"
+                        class="app-select"
                         style="background: #ffffff;"
                         placeholder="e.g. 125000"
                       ></v-text-field>
@@ -345,7 +350,8 @@
                         type="date"
                         density="default"
                         variant="outlined"
-                        hide-details
+                        hide-details="auto"
+                        class="app-select"
                         style="background: #ffffff;"
                       ></v-text-field>
                     </v-col>
@@ -356,7 +362,8 @@
                         type="date"
                         density="default"
                         variant="outlined"
-                        hide-details
+                        hide-details="auto"
+                        class="app-select"
                         style="background: #ffffff;"
                       ></v-text-field>
                     </v-col>
@@ -371,7 +378,8 @@
                       min="0"
                       density="default"
                       variant="outlined"
-                      hide-details
+                      hide-details="auto"
+                      class="app-select"
                       style="background: #ffffff;"
                       placeholder="e.g. 125000"
                     ></v-text-field>
@@ -386,7 +394,8 @@
                       step="0.1"
                       density="default"
                       variant="outlined"
-                      hide-details
+                      hide-details="auto"
+                      class="app-select"
                       style="background: #ffffff;"
                       placeholder="e.g. 4.2"
                     ></v-text-field>
@@ -400,7 +409,8 @@
                       step="0.01"
                       density="default"
                       variant="outlined"
-                      hide-details
+                      hide-details="auto"
+                      class="app-select"
                       style="background: #ffffff;"
                       placeholder="e.g. 18500"
                     ></v-text-field>
@@ -412,8 +422,8 @@
                   rows="4"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-textarea>
               </v-form>
@@ -428,7 +438,8 @@
                   @change="handleFileUpload"
                   density="default"
                   variant="outlined"
-                  hide-details
+                  hide-details="auto"
+                  class="app-select"
                   style="background: #ffffff;"
                 ></v-file-input>
                 <v-row v-if="uploadedFiles.length > 0" class="mt-4">
@@ -464,14 +475,14 @@
             Cancel
           </v-btn>
           <v-btn
-            v-if="tab === 'manual' || tab === 'upload'"
             color="primary"
-            @click="saveAd"
-            :loading="saving"
+            @click="tab === 'generate' ? generateAd() : saveAd()"
+            :loading="tab === 'generate' ? generating : saving"
+            :disabled="tab === 'generate' && !generateForm.prompt?.trim()"
             variant="elevated"
             style="font-weight: 600; text-transform: none; letter-spacing: 0.3px;"
           >
-            Save
+            {{ tab === 'generate' ? 'Generate & Save' : 'Save' }}
           </v-btn>
         </v-card-actions>
       </v-card>

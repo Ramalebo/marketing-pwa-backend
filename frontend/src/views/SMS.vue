@@ -170,7 +170,7 @@
               <span class="text-h6 font-weight-semibold" style="color: #1a1a1a;">Send SMS Campaign</span>
             </v-card-title>
             <v-card-text class="pa-6">
-              <v-form @submit.prevent="sendSMS">
+              <v-form @submit.prevent="sendSMS" class="form-dialog-fields">
                 <v-select
                   v-model="selectedClient"
                   :items="clients"
@@ -181,7 +181,8 @@
                   required
                   density="default"
                   variant="outlined"
-                  hide-details
+                  hide-details="auto"
+                  class="app-select"
                   style="background: #ffffff;"
                   @update:model-value="loadCustomerContactsForSending"
                 ></v-select>
@@ -224,8 +225,8 @@
                   prepend-inner-icon="mdi-account-multiple"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 >
                   <template v-slot:item="{ props, item }">
@@ -248,8 +249,8 @@
                   prepend-inner-icon="mdi-file-document"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                   @update:model-value="loadTemplate"
                 >
@@ -271,8 +272,8 @@
                   :counter="160"
                   density="default"
                   variant="outlined"
-                  hide-details
-                  class="mt-4"
+                  hide-details="auto"
+                  class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-textarea>
 
@@ -498,7 +499,7 @@
             variant="elevated"
             style="font-weight: 600; text-transform: none; letter-spacing: 0.3px;"
           >
-            {{ editingContact ? 'Update' : 'Add' }}
+            Save
           </v-btn>
         </v-card-actions>
       </v-card>

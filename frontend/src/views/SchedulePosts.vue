@@ -53,7 +53,8 @@
                 clearable
                 density="default"
                 variant="outlined"
-                hide-details
+                hide-details="auto"
+                class="app-select"
                 @update:model-value="loadScheduled"
               ></v-select>
             </div>
@@ -168,7 +169,7 @@
             <span>{{ editingItem ? 'Reschedule post' : 'Schedule post' }}</span>
           </v-card-title>
           <v-card-text class="pa-4">
-            <v-form ref="scheduleFormRef" v-model="scheduleFormValid">
+            <v-form ref="scheduleFormRef" v-model="scheduleFormValid" class="form-dialog-fields">
               <v-select
                 v-model="scheduleForm.adId"
                 :items="ads"
@@ -177,8 +178,8 @@
                 label="Campaign (Ad)"
                 variant="outlined"
                 density="default"
-                hide-details
-                class="mb-4"
+                hide-details="auto"
+                class="app-select mb-4"
                 :disabled="!!editingItem"
               ></v-select>
               <v-select
@@ -191,8 +192,8 @@
                 chips
                 variant="outlined"
                 density="default"
-                hide-details
-                class="mb-4"
+                hide-details="auto"
+                class="app-select mb-4"
                 :disabled="!!editingItem"
               ></v-select>
               <v-text-field
@@ -226,15 +227,16 @@
           </v-card-text>
           <v-card-actions class="pa-4" style="background: #f9fafb; border-top: 1px solid #e5e7eb;">
             <v-spacer></v-spacer>
-            <v-btn variant="text" @click="closeScheduleDialog">Cancel</v-btn>
+            <v-btn variant="text" @click="closeScheduleDialog" style="font-weight: 500; text-transform: none;">Cancel</v-btn>
             <v-btn
               color="primary"
               variant="elevated"
               :loading="saving"
               :disabled="!scheduleFormValid || !scheduleForm.adId || !scheduleForm.platforms?.length || !scheduleForm.scheduledAt"
               @click="saveSchedule"
+              style="font-weight: 600; text-transform: none; letter-spacing: 0.3px;"
             >
-              {{ editingItem ? 'Update' : 'Schedule' }}
+              Save
             </v-btn>
           </v-card-actions>
         </v-card>

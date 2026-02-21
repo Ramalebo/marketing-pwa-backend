@@ -1,6 +1,8 @@
 # Deployment Summary
 
-## ✅ Completed Tasks
+> **Current production:** Backend on **Render** with **MySQL**. See **DEPLOY_TO_RENDER.md** for env vars and deploy steps, and **README.md** for the app overview.
+
+## ✅ Completed Tasks (historical)
 
 ### 1. MongoDB Re-enabled
 - ✅ Added `mongoose` to `backend/package.json`

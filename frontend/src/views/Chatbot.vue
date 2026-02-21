@@ -39,7 +39,8 @@
                 clearable
                 density="default"
                 variant="outlined"
-                hide-details
+                hide-details="auto"
+                class="app-select"
                 style="background: #ffffff;"
                 @update:model-value="loadChatHistory"
               ></v-select>
