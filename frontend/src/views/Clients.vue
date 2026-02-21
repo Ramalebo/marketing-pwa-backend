@@ -540,8 +540,16 @@ export default {
   flex-shrink: 0;
 }
 
+/* Card header: allow wrap so title and search don't overlap on small screens */
+.clients-page .card-header {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .clients-search {
   max-width: 300px;
+  min-width: 0;
+  flex: 1 1 200px;
 }
 
 /* DRA table styling for v-data-table */

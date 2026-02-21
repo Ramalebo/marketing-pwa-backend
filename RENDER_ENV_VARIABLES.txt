@@ -1,0 +1,97 @@
+========================================
+RENDER – ENVIRONMENT VARIABLES
+Copy each Key and Value into Render → Your backend → Environment
+========================================
+
+Go to: https://dashboard.render.com → your backend service → Environment
+Click "Add Environment Variable" for each row. Replace the YOUR_* placeholders with your real values.
+
+----------------------------------------
+REQUIRED – Core
+----------------------------------------
+
+Key:   NODE_ENV
+Value: production
+
+Key:   PORT
+Value: 10000
+
+Key:   JWT_SECRET
+Value: dominantlogic-jwt-secret-change-in-production-2024
+
+Key:   FRONTEND_URL
+Value: https://dominantlogic.tech
+
+----------------------------------------
+REQUIRED – MySQL (cPanel)
+----------------------------------------
+
+Key:   DB_HOST
+Value: 169.239.218.62
+
+Key:   DB_PORT
+Value: 3306
+
+Key:   DB_NAME
+Value: dominan1_marketing_pwa
+
+Key:   DB_USER
+Value: YOUR_CPANEL_MYSQL_USERNAME
+       (e.g. dominan1_xxxxx from cPanel → MySQL® Databases → Current Users)
+
+Key:   DB_PASSWORD
+Value: YOUR_CPANEL_MYSQL_PASSWORD
+       (password for that MySQL user)
+
+----------------------------------------
+REQUIRED – Domain email (SMTP)
+----------------------------------------
+
+Key:   SMTP_HOST
+Value: mail.dominantlogic.tech
+
+Key:   SMTP_PORT
+Value: 465
+
+Key:   SMTP_USER
+Value: YOUR_FULL_EMAIL@dominantlogic.tech
+       (e.g. noreply@dominantlogic.tech)
+
+Key:   SMTP_PASSWORD
+Value: YOUR_EMAIL_PASSWORD
+       (password for that email account)
+
+Key:   SMTP_SENDER_NAME
+Value: Marketing Platform
+
+----------------------------------------
+DO NOT ADD
+----------------------------------------
+• USE_SQLITE  (leave unset when using MySQL)
+
+----------------------------------------
+BULK PASTE (if Render has "Paste from .env" or bulk add)
+----------------------------------------
+Copy the block below and replace YOUR_* with your values, then paste into Render.
+
+NODE_ENV=production
+PORT=10000
+JWT_SECRET=dominantlogic-jwt-secret-change-in-production-2024
+FRONTEND_URL=https://dominantlogic.tech
+DB_HOST=169.239.218.62
+DB_PORT=3306
+DB_NAME=dominan1_marketing_pwa
+DB_USER=YOUR_CPANEL_MYSQL_USERNAME
+DB_PASSWORD=YOUR_CPANEL_MYSQL_PASSWORD
+SMTP_HOST=mail.dominantlogic.tech
+SMTP_PORT=465
+SMTP_USER=YOUR_FULL_EMAIL@dominantlogic.tech
+SMTP_PASSWORD=YOUR_EMAIL_PASSWORD
+SMTP_SENDER_NAME=Marketing Platform
+
+----------------------------------------
+After saving
+----------------------------------------
+• Render will redeploy automatically.
+• In cPanel → Remote MySQL®: allow Render to connect to your DB (add IP/host if required).
+• Ensure backend/sql/cpanel_mysql_setup.sql has been run in phpMyAdmin on dominan1_marketing_pwa.

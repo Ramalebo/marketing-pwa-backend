@@ -143,7 +143,8 @@
                 <v-icon :color="channel.iconColor" size="24">{{ channel.icon }}</v-icon>
               </div>
               <div class="channel-perf-body">
-                <div class="channel-perf-value">{{ channel.value }}</div>
+                <div class="channel-perf-name">{{ channel.name }}</div>
+                <div class="channel-perf-value">{{ (channel.value === '0' || channel.value === 0 || !channel.value) ? '—' : channel.value }}</div>
                 <span class="channel-perf-change">{{ formatChange(channel.change) || '+0%' }}</span>
                 <div class="channel-perf-desc">{{ channel.description }}</div>
               </div>
@@ -568,6 +569,8 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .chart-title {
@@ -575,12 +578,15 @@ export default {
   font-weight: 600;
   color: #1a1a1a;
   margin: 0 0 16px 0;
+  min-width: 0;
 }
 
 .chart-header .chart-title { margin-bottom: 0; }
 
 .chart-select {
-  max-width: 140px;
+  max-width: 160px;
+  min-width: 120px;
+  flex-shrink: 0;
 }
 
 .chart-wrap {
@@ -643,6 +649,13 @@ export default {
 
 .channel-perf-body {
   min-width: 0;
+}
+
+.channel-perf-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 2px;
 }
 
 .channel-perf-value {

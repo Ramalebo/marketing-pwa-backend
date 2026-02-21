@@ -221,6 +221,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .card-title { margin: 0; font-size: 16px; font-weight: 600; }

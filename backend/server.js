@@ -70,6 +70,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/clients', require('./routes/clients'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/ads', require('./routes/ads'));
+app.use('/api/display', require('./routes/displayTracking'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/insights', require('./routes/insights'));
 app.use('/api/chatbot', require('./routes/chatbot'));
@@ -80,6 +81,7 @@ app.use('/api/social-media', require('./routes/social-media'));
 app.use('/api/hashtags', require('./routes/hashtags'));
 app.use('/api/templates', require('./routes/templates'));
 app.use('/api/post-history', require('./routes/post-history'));
+app.use('/api/scheduled-posts', require('./routes/scheduled-posts'));
 app.use('/api/customer-contacts', require('./routes/customer-contacts'));
 app.use('/api/meta', require('./routes/meta-compliance'));
 

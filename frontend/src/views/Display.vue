@@ -66,8 +66,10 @@
         <v-tab value="delivery">Delivery Box Ads</v-tab>
         <v-tab value="taxi">Taxi/Car Ads</v-tab>
         <v-tab value="available">Available Locations</v-tab>
+        <v-tab value="tracking">Tracking</v-tab>
       </v-tabs>
       <v-btn
+        v-if="activeTab !== 'tracking'"
         color="primary"
         variant="tonal"
         size="small"
@@ -79,8 +81,178 @@
       </v-btn>
     </div>
 
+    <!-- Tracking: Live Map + Impressions -->
+    <template v-if="activeTab === 'tracking'">
+      <v-row class="tracking-row">
+        <v-col cols="12">
+          <v-card class="tracking-map-card" elevation="0">
+            <div class="tracking-map-header">
+              <h2 class="tracking-map-title">
+                <v-icon color="primary" size="24" class="mr-2">mdi-map-marker-path</v-icon>
+                Live Fleet &amp; Impression Tracking
+              </h2>
+              <div class="d-flex align-center">
+                <v-checkbox
+                  v-model="showHeatmap"
+                  label="Show impression heatmap"
+                  density="compact"
+                  hide-details
+                  color="primary"
+                  class="mr-4"
+                />
+                <v-btn variant="tonal" size="small" color="primary" @click="loadTrackingData" :loading="trackingLoading">
+                  <v-icon size="18" class="mr-1">mdi-refresh</v-icon>
+                  Refresh
+                </v-btn>
+              </div>
+            </div>
+            <div class="tracking-map-wrap map-grid">
+              <svg class="tracking-map-svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                  <radialGradient id="heatGradient">
+                    <stop offset="0%" stop-color="#ef4444" stop-opacity="0.6" />
+                    <stop offset="100%" stop-color="#ef4444" stop-opacity="0" />
+                  </radialGradient>
+                </defs>
+                <!-- Heatmap zones (billboard/digital high-traffic areas) -->
+                <g v-if="showHeatmap" opacity="0.35">
+                  <circle cx="200" cy="180" r="70" fill="url(#heatGradient)" />
+                  <circle cx="580" cy="320" r="90" fill="url(#heatGradient)" />
+                  <circle cx="400" cy="260" r="55" fill="url(#heatGradient)" />
+                </g>
+                <!-- Vehicle markers -->
+                <g v-for="v in trackingVehicles" :key="v.id" class="vehicle-marker">
+                  <circle
+                    :cx="vehicleX(v)"
+                    :cy="vehicleY(v)"
+                    r="14"
+                    fill="#2196F3"
+                    stroke="white"
+                    stroke-width="2"
+                    class="vehicle-dot"
+                  />
+                  <text
+                    :x="vehicleX(v) + 18"
+                    :y="vehicleY(v) + 5"
+                    font-size="12"
+                    fill="#374151"
+                    font-weight="600"
+                  >
+                    {{ v.name }}
+                  </text>
+                </g>
+              </svg>
+            </div>
+            <div class="tracking-map-legend">
+              <span><span class="legend-dot legend-dot-vehicle"></span> Fleet (taxi/delivery)</span>
+              <span><span class="legend-dot legend-dot-heat"></span> High traffic (impressions)</span>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="7">
+          <v-card class="app-card impression-tracking-card" elevation="0">
+            <h3 class="card-heading mb-4">
+              <v-icon color="primary" size="22" class="mr-2">mdi-eye</v-icon>
+              Billboard &amp; Digital Screen Impressions
+            </h3>
+            <v-table density="comfortable" class="impression-table">
+              <thead>
+                <tr>
+                  <th>Location</th>
+                  <th>Type</th>
+                  <th>Est. / day</th>
+                  <th>Recorded today</th>
+                  <th>Total recorded</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in trackingImpressions" :key="row.adId">
+                  <td>{{ row.title }}</td>
+                  <td><v-chip size="small" variant="flat" color="grey-lighten-2">{{ row.displayType }}</v-chip></td>
+                  <td>{{ formatImpNum(row.impressionsPerDay) }}</td>
+                  <td>{{ formatImpNum(row.recordedToday) }}</td>
+                  <td>{{ formatImpNum(row.recordedTotal) }}</td>
+                  <td>
+                    <v-btn variant="text" size="small" color="primary" @click="recordImpression(row)">
+                      + Record
+                    </v-btn>
+                  </td>
+                </tr>
+                <tr v-if="trackingImpressions.length === 0 && !trackingLoading">
+                  <td colspan="6" class="text-center text-medium-emphasis py-6">No billboards or digital screens yet. Add locations in Billboards or Digital Screens tabs.</td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="5">
+          <v-card class="app-card calculator-card" elevation="0">
+            <h3 class="card-heading mb-4">
+              <v-icon color="primary" size="22" class="mr-2">mdi-calculator</v-icon>
+              Impression Calculator
+            </h3>
+            <div class="calculator-form">
+              <v-select
+                v-model="calcMethod"
+                :items="calcMethodItems"
+                item-title="label"
+                item-value="value"
+                label="Method"
+                density="compact"
+                variant="outlined"
+                hide-details
+                class="mb-3"
+              />
+              <v-text-field
+                v-model.number="calcArea"
+                label="Surface area (sq ft)"
+                type="number"
+                min="0"
+                density="compact"
+                variant="outlined"
+                hide-details
+                class="mb-3"
+              />
+              <v-text-field
+                v-if="calcMethod === 'time'"
+                v-model.number="calcHours"
+                label="Daily hours lit"
+                type="number"
+                min="0"
+                max="24"
+                density="compact"
+                variant="outlined"
+                hide-details
+                class="mb-3"
+              />
+              <v-select
+                v-if="calcMethod === 'weather'"
+                v-model="calcWeather"
+                :items="[{ title: 'Sunny', value: 'sunny' }, { title: 'Cloudy', value: 'cloudy' }, { title: 'Rainy', value: 'rainy' }]"
+                item-title="title"
+                item-value="value"
+                label="Weather"
+                density="compact"
+                variant="outlined"
+                hide-details
+                class="mb-3"
+              />
+            </div>
+            <div class="calculator-result">
+              <div class="calculator-result-label">Estimated impressions</div>
+              <div class="calculator-result-value">{{ calculatedImpressions.toLocaleString() }}</div>
+              <div class="calculator-result-meta">Based on {{ calcMethod }} model</div>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </template>
+
     <!-- Campaign / location cards -->
-    <v-row class="cards-row">
+    <v-row v-else class="cards-row">
       <v-col v-for="item in filteredItems" :key="item.id" cols="12" md="6" lg="4">
         <v-card class="location-card" elevation="0">
           <div class="card-image-wrap">
@@ -156,63 +328,69 @@
     </v-row>
 
     <!-- Add / Edit location dialog -->
-    <v-dialog v-model="addDialog" max-width="600" persistent scrollable>
-      <v-card>
-        <v-card-title class="d-flex align-center pa-4">
+    <v-dialog v-model="addDialog" max-width="600" persistent scrollable content-class="add-location-dialog">
+      <v-card class="add-location-card">
+        <v-card-title class="add-location-title d-flex align-center">
           <v-icon class="mr-2">mdi-map-marker-plus</v-icon>
           {{ editingId ? 'Edit location' : 'Add location' }}
           <v-spacer />
           <v-btn icon variant="text" @click="closeAddDialog"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
-        <v-card-text class="pa-4 pt-0">
+        <v-divider />
+        <v-card-text class="add-location-body">
           <v-form ref="addForm" v-model="addFormValid">
             <v-select
               v-model="addForm.displayType"
               :items="displayTypeItems"
               item-title="title"
               item-value="value"
-              label="Type"
+              label="Display type"
+              placeholder="Select type"
               density="comfortable"
               variant="outlined"
               hide-details
-              class="mb-3"
+              class="add-location-field mb-4"
             />
             <v-text-field
               v-model="addForm.title"
-              label="Title (e.g. Highway 101 - North)"
+              label="Title"
+              placeholder="e.g. Highway 101 - North"
               required
               density="comfortable"
               variant="outlined"
               hide-details
-              class="mb-3"
+              class="add-location-field mb-4"
             />
             <v-text-field
               v-model="addForm.location"
-              label="Location (e.g. San Francisco, CA)"
+              label="Location"
+              placeholder="e.g. San Francisco, CA"
               density="comfortable"
               variant="outlined"
               hide-details
-              class="mb-3"
+              class="add-location-field mb-4"
             />
             <v-row dense>
               <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="addForm.size"
-                  label="Size (e.g. 14x48 ft)"
+                  label="Size"
+                  placeholder="e.g. 14x48 ft"
                   density="comfortable"
                   variant="outlined"
                   hide-details
-                  class="mb-3"
+                  class="add-location-field mb-4"
                 />
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="addForm.period"
-                  label="Period (e.g. 3 months)"
+                  label="Period"
+                  placeholder="e.g. 3 months"
                   density="comfortable"
                   variant="outlined"
                   hide-details
-                  class="mb-3"
+                  class="add-location-field mb-4"
                 />
               </v-col>
             </v-row>
@@ -226,7 +404,7 @@
                   density="comfortable"
                   variant="outlined"
                   hide-details
-                  class="mb-3"
+                  class="add-location-field mb-4"
                   placeholder="125000"
                 />
               </v-col>
@@ -240,7 +418,7 @@
                   density="comfortable"
                   variant="outlined"
                   hide-details
-                  class="mb-3"
+                  class="add-location-field mb-4"
                   placeholder="8500"
                 />
               </v-col>
@@ -254,7 +432,7 @@
                   density="comfortable"
                   variant="outlined"
                   hide-details
-                  class="mb-3"
+                  class="add-location-field mb-4"
                 />
               </v-col>
               <v-col cols="12" sm="6">
@@ -265,19 +443,19 @@
                   density="comfortable"
                   variant="outlined"
                   hide-details
-                  class="mb-3"
+                  class="add-location-field mb-4"
                 />
               </v-col>
             </v-row>
             <v-text-field
               v-model="addForm.reach"
-              label="Reach (optional, total)"
+              label="Reach (optional)"
               type="number"
               min="0"
               density="comfortable"
               variant="outlined"
               hide-details
-              class="mb-3"
+              class="add-location-field mb-4"
             />
             <v-select
               v-model="addForm.status"
@@ -288,19 +466,22 @@
               density="comfortable"
               variant="outlined"
               hide-details
-              class="mb-3"
+              class="add-location-field mb-4"
             />
             <v-textarea
               v-model="addForm.description"
               label="Description (optional)"
+              placeholder="Notes about this location"
               rows="2"
               density="comfortable"
               variant="outlined"
               hide-details
+              class="add-location-field"
             />
           </v-form>
         </v-card-text>
-        <v-card-actions class="pa-4 pt-0">
+        <v-divider />
+        <v-card-actions class="add-location-actions">
           <v-spacer />
           <v-btn variant="text" @click="closeAddDialog">Cancel</v-btn>
           <v-btn color="primary" variant="elevated" :loading="addSaving" @click="saveAddForm">
@@ -360,10 +541,36 @@ export default {
         { title: 'Digital Screens', value: 'digital' },
         { title: 'Delivery Box Ads', value: 'delivery' },
         { title: 'Taxi/Car Ads', value: 'taxi' }
-      ]
+      ],
+      // Tracking tab
+      trackingVehicles: [],
+      trackingImpressions: [],
+      showHeatmap: true,
+      trackingLoading: false,
+      // Calculator
+      calcMethod: 'basic',
+      calcArea: 100,
+      calcHours: 12,
+      calcWeather: 'sunny'
     };
   },
   computed: {
+    calcMethodItems() {
+      return [
+        { label: 'Basic (area)', value: 'basic' },
+        { label: 'Time (hours lit)', value: 'time' },
+        { label: 'Weather adjusted', value: 'weather' }
+      ];
+    },
+    calculatedImpressions() {
+      let base = (this.calcArea || 0) * 100;
+      if (this.calcMethod === 'time') base = base * ((this.calcHours || 0) / 24);
+      if (this.calcMethod === 'weather') {
+        const f = this.calcWeather === 'sunny' ? 1.2 : this.calcWeather === 'rainy' ? 0.8 : 1;
+        base = base * f;
+      }
+      return Math.max(0, Math.floor(base));
+    },
     addButtonLabel() {
       const t = TAB_TO_DISPLAY_TYPE[this.activeTab];
       return t ? DISPLAY_TYPE_LABELS[t] || 'Location' : 'Location';
@@ -392,10 +599,68 @@ export default {
       return this.items;
     }
   },
+  watch: {
+    activeTab(tab) {
+      if (tab === 'tracking') this.loadTrackingData();
+    }
+  },
   mounted() {
     this.loadItems();
+    if (this.activeTab === 'tracking') this.loadTrackingData();
   },
   methods: {
+    async loadTrackingData() {
+      this.trackingLoading = true;
+      try {
+        await Promise.all([this.loadTrackingVehicles(), this.loadTrackingImpressions()]);
+      } finally {
+        this.trackingLoading = false;
+      }
+    },
+    async loadTrackingVehicles() {
+      try {
+        const { data } = await axios.get('/display/vehicles');
+        this.trackingVehicles = data || [];
+      } catch (e) {
+        console.error('Load fleet:', e);
+        this.trackingVehicles = [];
+      }
+    },
+    async loadTrackingImpressions() {
+      try {
+        const { data } = await axios.get('/display/impressions');
+        this.trackingImpressions = data || [];
+      } catch (e) {
+        console.error('Load impressions:', e);
+        this.trackingImpressions = [];
+      }
+    },
+    vehicleX(v) {
+      const baseLng = 28.0473;
+      const lng = v.lng != null ? v.lng : baseLng;
+      return 100 + ((lng - baseLng) * 800);
+    },
+    vehicleY(v) {
+      const baseLat = -26.2041;
+      const lat = v.lat != null ? v.lat : baseLat;
+      return 250 - ((lat - baseLat) * 600);
+    },
+    formatImpNum(n) {
+      if (n == null || n === '') return '—';
+      const num = Number(n);
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return String(num);
+    },
+    async recordImpression(row) {
+      try {
+        await axios.post('/display/impressions', { adId: row.adId, count: 1 });
+        this.$store.dispatch('showSnackbar', { text: 'Impression recorded', color: 'success' });
+        await this.loadTrackingImpressions();
+      } catch (e) {
+        this.$store.dispatch('showSnackbar', { text: e.response?.data?.message || 'Failed to record', color: 'error' });
+      }
+    },
     cardImage(item) {
       const images = item.content?.images || [];
       const first = images[0];
@@ -542,6 +807,14 @@ export default {
   margin-bottom: 24px;
 }
 
+.display-header > div {
+  min-width: 0;
+}
+
+.display-header .v-btn {
+  flex-shrink: 0;
+}
+
 .display-title {
   font-size: 1.75rem;
   font-weight: 700;
@@ -608,8 +881,20 @@ export default {
 }
 
 .display-tabs {
-  flex: 1;
+  flex: 1 1 200px;
   min-width: 0;
+  overflow: hidden;
+}
+
+.display-tabs :deep(.v-tabs) {
+  min-width: 0;
+}
+
+.display-tabs :deep(.v-tabs__container),
+.display-tabs :deep(.v-tabs__wrapper) {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .display-tabs :deep(.v-tab) {
@@ -707,5 +992,185 @@ export default {
   padding: 48px 24px;
   border: 1px dashed #e5e7eb;
   border-radius: 12px;
+}
+
+/* Add location dialog: prevent overlap, clear spacing */
+.add-location-card {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.add-location-title {
+  padding: 20px 24px !important;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.add-location-body {
+  padding: 24px !important;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+}
+
+.add-location-body .add-location-field {
+  min-height: 56px;
+}
+
+.add-location-actions {
+  padding: 16px 24px !important;
+}
+
+/* Ensure dialog overlay stacks above page content */
+:deep(.add-location-dialog) {
+  z-index: 2400;
+}
+
+:deep(.add-location-dialog .v-overlay__content) {
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tracking tab */
+.tracking-row {
+  margin-bottom: 24px;
+}
+
+.tracking-map-card {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.tracking-map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fafafa;
+}
+
+.tracking-map-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.tracking-map-wrap {
+  position: relative;
+  height: 420px;
+  background: #f3f4f6;
+}
+
+.map-grid {
+  background-image: linear-gradient(#e5e7eb 1px, transparent 1px),
+    linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.tracking-map-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.vehicle-marker {
+  cursor: pointer;
+}
+
+.vehicle-dot {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.tracking-map-legend {
+  padding: 12px 20px;
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.legend-dot-vehicle {
+  background: #2196F3;
+  border: 1px solid #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.legend-dot-heat {
+  background: #ef4444;
+  opacity: 0.6;
+}
+
+.impression-tracking-card,
+.calculator-card {
+  padding: 20px 24px;
+}
+
+.card-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.impression-table {
+  font-size: 14px;
+}
+
+.impression-table th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+}
+
+.calculator-result {
+  margin-top: 20px;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  color: #fff;
+  text-align: center;
+}
+
+.calculator-result-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.calculator-result-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.calculator-result-meta {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
 }
 </style>

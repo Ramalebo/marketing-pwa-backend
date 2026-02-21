@@ -1,0 +1,79 @@
+========================================
+HOW TO ADD VARIABLES ON RENDER
+========================================
+
+1. Go to https://dashboard.render.com
+2. Click your BACKEND service (Node API).
+3. Click "Environment" in the left menu.
+4. Click "Add Environment Variable". For each variable below, enter the Key and the Value.
+
+Choose ONE option: A (easier) or B (use cPanel MySQL).
+
+========================================
+OPTION A – SQLite on Render (RECOMMENDED, EASIEST)
+========================================
+No MySQL needed. Data is stored on Render (resets if you delete the service).
+
+Add these 5 variables only:
+
+Key: NODE_ENV
+Value: production
+
+Key: PORT
+Value: 10000
+
+Key: JWT_SECRET
+Value: dominantlogic-jwt-secret-change-in-production-2024
+
+Key: FRONTEND_URL
+Value: https://dominantlogic.tech
+
+Key: USE_SQLITE
+Value: true
+
+Do NOT add DB_HOST, DB_PORT, DB_NAME, DB_USER, or DB_PASSWORD.
+
+========================================
+OPTION B – Use cPanel MySQL from Render
+========================================
+Your database stays on cPanel (dominan1_marketing_pwa). Render must be allowed to connect.
+
+1. In cPanel → Remote MySQL®: add the host that Render gives you (or use your server hostname, e.g. cp62.domains.co.za).
+2. Add these variables on Render:
+
+Key: NODE_ENV
+Value: production
+
+Key: PORT
+Value: 10000
+
+Key: JWT_SECRET
+Value: dominantlogic-jwt-secret-change-in-production-2024
+
+Key: FRONTEND_URL
+Value: https://dominantlogic.tech
+
+Key: DB_HOST
+Value: cp62.domains.co.za
+(Replace with your cPanel server hostname – NOT localhost.)
+
+Key: DB_PORT
+Value: 3306
+
+Key: DB_NAME
+Value: dominan1_marketing_pwa
+
+Key: DB_USER
+Value: (your cPanel MySQL username, e.g. dominan1_xxxxx)
+
+Key: DB_PASSWORD
+Value: (your cPanel MySQL password)
+
+Do NOT add USE_SQLITE.
+
+========================================
+AFTER YOU ADD VARIABLES
+========================================
+
+• Save. Render will redeploy automatically.
+• Keep JWT_SECRET and DB_PASSWORD private.

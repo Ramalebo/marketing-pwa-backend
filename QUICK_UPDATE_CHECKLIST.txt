@@ -1,0 +1,47 @@
+QUICK UPDATE CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ GITHUB - PUSH BACKEND CHANGES (REQUIRED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Run these commands in terminal:
+
+cd c:\temp\AppCode
+git add backend/
+git commit -m "Replace Twilio/OpenAI/Gmail with free API alternatives"
+git push origin main
+
+Wait 3-5 minutes for Render to auto-deploy.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ RENDER - ADD API KEYS (REQUIRED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Go to: https://dashboard.render.com
+2. Click your backend service
+3. Go to "Environment" tab
+4. Add these variables:
+
+OPENROUTER_API_KEY=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
+OPENROUTER_MODEL=meta-llama/llama-3.2-3b-instruct:free
+
+(Add SMSProvider and Mailtrap later when you get credentials)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ CPANEL - NO CHANGES NEEDED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Frontend is fine - no updates needed!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEST IT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+After deployment, test at: https://dominantlogic.tech
+→ Try the Chatbot feature
+→ Should get AI responses ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

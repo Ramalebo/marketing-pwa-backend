@@ -66,6 +66,11 @@ const routes = [
     component: () => import('../views/PostHistory.vue')
   },
   {
+    path: '/schedule-posts',
+    name: 'SchedulePosts',
+    component: () => import('../views/SchedulePosts.vue')
+  },
+  {
     path: '/display',
     name: 'Display',
     component: () => import('../views/Display.vue')

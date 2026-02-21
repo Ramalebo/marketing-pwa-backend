@@ -1,0 +1,74 @@
+========================================
+OPTION B – cPanel MySQL from Render
+Add these in Render → Your backend → Environment
+========================================
+
+Steps:
+1. Go to https://dashboard.render.com → your backend service → Environment
+2. Add each variable below (Key + Value). Replace the placeholders with your real values.
+3. For email to work you MUST also add the "Domain email (SMTP)" block below.
+4. In cPanel → Remote MySQL®: add Render’s IP or allow your server hostname so Render can connect.
+
+----------------------------------------
+Variables (add one by one)
+----------------------------------------
+
+NODE_ENV = production
+
+PORT = 10000
+
+JWT_SECRET = dominantlogic-jwt-secret-change-in-production-2024
+
+FRONTEND_URL = https://dominantlogic.tech
+
+DB_HOST = 169.239.218.62
+→ From Domains.co.za support (MySQL host for your server)
+
+DB_PORT = 3306
+
+DB_NAME = dominan1_marketing_pwa
+
+DB_USER = YOUR_CPANEL_MYSQL_USERNAME
+→ e.g. dominan1_xxxxx (from cPanel → MySQL® Databases → Current Users)
+
+DB_PASSWORD = YOUR_CPANEL_MYSQL_PASSWORD
+→ the password for that MySQL user
+
+----------------------------------------
+Important
+----------------------------------------
+• Do NOT add USE_SQLITE when using Option B.
+• After saving, Render will redeploy.
+• Run backend/sql/cpanel_mysql_setup.sql in phpMyAdmin on dominan1_marketing_pwa if you haven’t already.
+• In cPanel → Remote MySQL®: add Render’s outbound IP (or “%” to allow any host, if your host allows it) so Render can connect to 169.239.218.62.
+
+----------------------------------------
+Domain email (SMTP) – REQUIRED for sending email from the app
+----------------------------------------
+Without these, the Email feature will return "Email not configured" and no mail will be sent.
+Add all of these in Render → Environment (same place as the variables above).
+
+SMTP_HOST = mail.dominantlogic.tech
+
+SMTP_PORT = 465
+(Use 465 for SSL/TLS, or 587 if you prefer.)
+
+SMTP_USER = YOUR_FULL_EMAIL@dominantlogic.tech
+→ The email address you use to log in (e.g. noreply@dominantlogic.tech)
+
+SMTP_PASSWORD = YOUR_EMAIL_PASSWORD
+→ The password for that email account
+
+SMTP_SENDER_NAME = Marketing Platform
+(Optional; this is the “From” name recipients see.)
+
+When SMTP_HOST, SMTP_USER, and SMTP_PASSWORD are all set, the app sends mail via your domain. Otherwise it uses Mailtrap only if MAILTRAP_API_TOKEN is set.
+
+----------------------------------------
+Check that email is configured (after deploy)
+----------------------------------------
+Open in browser (replace with your Render backend URL):
+  https://YOUR-BACKEND.onrender.com/api/email/status
+
+You should see: { "configured": true, "method": "smtp", ... }
+If you see "configured": false, the SMTP variables are missing or wrong in Render Environment.

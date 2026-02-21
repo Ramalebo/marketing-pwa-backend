@@ -1,0 +1,62 @@
+QUICK SETUP CHECKLIST - Add API Keys to Render
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: Go to Render Dashboard
+→ https://dashboard.render.com
+→ Click your backend service
+
+STEP 2: Open Environment Tab
+→ Click "Environment" in left sidebar
+
+STEP 3: Add OpenRouter (AI)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Key: OPENROUTER_API_KEY
+Value: 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
+
+Key: OPENROUTER_MODEL (Optional)
+Value: meta-llama/llama-3.2-3b-instruct:free
+
+STEP 4: Add Mailtrap (Email)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Key: MAILTRAP_API_TOKEN
+Value: 445b61ff9d92f5cdddef
+
+Key: MAILTRAP_SENDER_EMAIL
+Value: noreply@dominantlogic.tech
+
+Key: MAILTRAP_SENDER_NAME
+Value: Marketing Platform
+
+STEP 5: Add SMSProvider (When You Get Credentials)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Key: SMS_PROVIDER_USERNAME
+Value: [from client]
+
+Key: SMS_PROVIDER_PASSWORD
+Value: [from client]
+
+Key: SMS_PROVIDER_SENDER
+Value: [from client]
+
+STEP 6: Wait for Deployment
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+→ Check "Logs" tab
+→ Wait 2-3 minutes
+→ Look for "Deploy successful"
+
+STEP 7: Test
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+→ Go to https://dominantlogic.tech
+→ Test Chatbot ✅
+→ Test Email ✅
+→ Test SMS (when ready) ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TIPS:
+- Variable names are CASE-SENSITIVE
+- No spaces before/after values
+- Click "Save Changes" after each variable
+- Render auto-deploys after saving
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

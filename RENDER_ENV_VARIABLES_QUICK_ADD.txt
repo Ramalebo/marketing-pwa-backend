@@ -1,0 +1,35 @@
+QUICK REFERENCE: Add OpenRouter API Key to Render
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: Go to Render Dashboard
+→ https://dashboard.render.com
+→ Click on your backend service
+
+STEP 2: Add Environment Variable
+→ Click "Environment" tab
+→ Click "Add Environment Variable"
+
+STEP 3: Add These Two Variables
+
+Variable 1:
+Key: OPENROUTER_API_KEY
+Value: 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
+
+Variable 2:
+Key: OPENROUTER_MODEL
+Value: meta-llama/llama-3.2-3b-instruct:free
+
+STEP 4: Save & Wait
+→ Click "Save Changes"
+→ Wait 2-3 minutes for auto-deployment
+→ Check "Logs" tab to verify success
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEST IT:
+→ Go to https://dominantlogic.tech
+→ Try the Chatbot feature
+→ If it responds, it's working! ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

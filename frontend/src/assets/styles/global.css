@@ -215,6 +215,26 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.5 !important;
 }
 
+/* Prevent select/field value text from being clipped or hidden */
+.v-select .v-field,
+.v-autocomplete .v-field,
+.v-combobox .v-field {
+  overflow: visible !important;
+}
+
+.v-select .v-field__input,
+.v-autocomplete .v-field__input,
+.v-combobox .v-field__input {
+  overflow: visible !important;
+  min-height: 44px !important;
+}
+
+.v-select .v-field__input .v-select__selection-text,
+.v-autocomplete .v-field__input .v-autocomplete__selection-text {
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
 /* Ensure form fields are properly aligned */
 .v-form {
   display: flex;
@@ -601,13 +621,50 @@ router-link:hover,
   visibility: visible !important;
 }
 
-/* Form fields in modals – labels and input text visible */
-.v-dialog .v-label,
-.v-dialog .v-field__input,
-.v-dialog .v-field .v-field__input {
+/* Form fields in modals – labels visible; do not force opacity on field input (causes double text in selects) */
+.v-dialog .v-label {
   color: #1a1a1a !important;
   opacity: 1 !important;
 }
+.v-dialog .v-field .v-field__input {
+  color: #1a1a1a !important;
+}
+
+/* Hide native input when select/autocomplete/combobox has a value – prevents double appearance (all dropdowns, Post History, Email, etc.) */
+.v-select--selected .v-field .v-field__input > input,
+.v-select--selected .v-field .v-field__input input,
+.v-select .v-field--dirty .v-field__input > input,
+.v-select .v-field--dirty .v-field__input input,
+.v-select .v-field__input:has(.v-select__selection-text) input,
+.v-autocomplete--selected .v-field .v-field__input > input,
+.v-autocomplete--selected .v-field .v-field__input input,
+.v-autocomplete .v-field--dirty:not(.v-field--focused) .v-field__input input,
+.v-combobox--selected .v-field .v-field__input > input,
+.v-combobox--selected .v-field .v-field__input input,
+.v-combobox .v-field--dirty:not(.v-field--focused) .v-field__input input,
+.v-dialog .v-select--selected .v-field .v-field__input > input,
+.v-dialog .v-select--selected .v-field .v-field__input input,
+.v-dialog .v-select .v-field--dirty .v-field__input > input,
+.v-dialog .v-select .v-field--dirty .v-field__input input,
+.v-dialog .v-select .v-field__input:has(.v-select__selection-text) input,
+.v-dialog .v-autocomplete--selected .v-field .v-field__input > input,
+.v-dialog .v-autocomplete .v-field--dirty:not(.v-field--focused) .v-field__input input,
+.v-dialog .v-combobox--selected .v-field .v-field__input > input,
+.v-dialog .v-combobox .v-field--dirty:not(.v-field--focused) .v-field__input input {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure select/autocomplete/combobox inside cards (e.g. Post History Filters) get same fix */
+.card .v-select .v-field--dirty .v-field__input input,
+.card .v-select--selected .v-field .v-field__input input,
+.card .v-select .v-field__input:has(.v-select__selection-text) input,
+.card .v-autocomplete .v-field--dirty:not(.v-field--focused) .v-field__input input,
+.card .v-combobox .v-field--dirty:not(.v-field--focused) .v-field__input input {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 .v-dialog .v-field--focused .v-label {
   color: #1976D2 !important;
 }

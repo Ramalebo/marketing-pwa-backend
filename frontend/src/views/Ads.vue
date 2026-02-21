@@ -80,7 +80,7 @@
                 </v-chip>
               </div>
             </v-card-text>
-            <v-card-actions class="pa-4" style="background: #f9fafb; border-top: 1px solid #e5e7eb;">
+            <v-card-actions class="pa-4 ads-card-actions" style="background: #f9fafb; border-top: 1px solid #e5e7eb;">
               <v-btn
                 color="primary"
                 variant="elevated"
@@ -1178,5 +1178,15 @@ export default {
   position: sticky;
   bottom: 0;
   z-index: 10;
+}
+
+/* Card actions: wrap on narrow cards so buttons don't overlap */
+.ads-card-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ads-card-actions .v-btn {
+  flex-shrink: 0;
 }
 </style>

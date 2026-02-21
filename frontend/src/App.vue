@@ -12,7 +12,7 @@
           <v-avatar color="#E3F2FD" size="40" class="sidebar-logo">
             <v-icon color="primary" size="22">mdi-send</v-icon>
           </v-avatar>
-          <h2 class="sidebar-title">AdReach Pro</h2>
+          <h2 class="sidebar-title">Dominant Logic</h2>
         </div>
       </div>
       <v-list class="sidebar-list sidebar-nav" density="comfortable">
@@ -35,16 +35,20 @@
           <template v-slot:prepend><v-icon :color="$route.name === 'Clients' ? 'primary' : undefined" icon="mdi-account-group" size="20" class="nav-icon"></v-icon></template>
           <v-list-item-title>Clients</v-list-item-title>
         </v-list-item>
-        <v-list-item :to="{ name: 'PostHistory' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'PostHistory' }">
-          <template v-slot:prepend><v-icon :color="$route.name === 'PostHistory' ? 'primary' : undefined" icon="mdi-share-variant" size="20" class="nav-icon"></v-icon></template>
-          <v-list-item-title>Social Platforms</v-list-item-title>
-        </v-list-item>
         <v-list-item v-if="isMainUser" :to="{ name: 'Users' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Users' }">
           <template v-slot:prepend><v-icon :color="$route.name === 'Users' ? 'primary' : undefined" icon="mdi-account-multiple" size="20" class="nav-icon"></v-icon></template>
           <v-list-item-title>Users</v-list-item-title>
         </v-list-item>
 
         <v-list-subheader class="nav-section-title">DISTRIBUTION</v-list-subheader>
+        <v-list-item :to="{ name: 'PostHistory' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'PostHistory' }">
+          <template v-slot:prepend><v-icon :color="$route.name === 'PostHistory' ? 'primary' : undefined" icon="mdi-share-variant" size="20" class="nav-icon"></v-icon></template>
+          <v-list-item-title>Social Platforms</v-list-item-title>
+        </v-list-item>
+        <v-list-item :to="{ name: 'SchedulePosts' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'SchedulePosts' }">
+          <template v-slot:prepend><v-icon :color="$route.name === 'SchedulePosts' ? 'primary' : undefined" icon="mdi-calendar-clock" size="20" class="nav-icon"></v-icon></template>
+          <v-list-item-title>Schedule Posts</v-list-item-title>
+        </v-list-item>
         <v-list-item :to="{ name: 'Email' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Email' }">
           <template v-slot:prepend><v-icon :color="$route.name === 'Email' ? 'primary' : undefined" icon="mdi-email" size="20" class="nav-icon"></v-icon></template>
           <v-list-item-title>Email</v-list-item-title>
@@ -59,10 +63,6 @@
         </v-list-item>
 
         <v-list-subheader class="nav-section-title">TOOLS</v-list-subheader>
-        <v-list-item :to="{ name: 'Insights' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Insights' }">
-          <template v-slot:prepend><v-icon :color="$route.name === 'Insights' ? 'primary' : undefined" icon="mdi-lightbulb-outline" size="20" class="nav-icon"></v-icon></template>
-          <v-list-item-title>Insights</v-list-item-title>
-        </v-list-item>
         <v-list-item :to="{ name: 'Reports' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Reports' }">
           <template v-slot:prepend><v-icon :color="$route.name === 'Reports' ? 'primary' : undefined" icon="mdi-file-document-outline" size="20" class="nav-icon"></v-icon></template>
           <v-list-item-title>Reports</v-list-item-title>
@@ -84,22 +84,24 @@
         <span class="app-bar-title page-title">{{ pageTitle }}</span>
         <span v-if="pageSubtitle" class="app-bar-subtitle page-subtitle">{{ pageSubtitle }}</span>
       </div>
-      <v-spacer />
-      <v-btn variant="flat" color="primary" class="app-bar-btn" :to="{ name: 'Ads' }" prepend-icon="mdi-plus">
-        New Campaign
-      </v-btn>
-      <v-menu location="bottom" min-width="160">
-        <template v-slot:activator="{ props }">
-          <div v-bind="props" class="app-bar-user user-menu">
-            <v-avatar color="grey-lighten-2" size="36" class="mr-2">
-              <v-icon size="20" color="grey">mdi-account</v-icon>
-            </v-avatar>
-            <span class="app-bar-user-name">{{ user?.name || 'John Doe' }}</span>
-            <v-icon size="18" class="ml-1 text-secondary">mdi-chevron-down</v-icon>
-          </div>
-        </template>
-        <v-list><v-list-item @click="logout" title="Logout" prepend-icon="mdi-logout" /></v-list>
-      </v-menu>
+      <v-spacer class="app-bar-spacer" />
+      <div class="app-bar-actions">
+        <v-btn variant="flat" color="primary" class="app-bar-btn" :to="{ name: 'Ads' }" prepend-icon="mdi-plus">
+          <span class="app-bar-btn-text">New Campaign</span>
+        </v-btn>
+        <v-menu location="bottom" min-width="160">
+          <template v-slot:activator="{ props }">
+            <div v-bind="props" class="app-bar-user user-menu">
+              <v-avatar color="grey-lighten-2" size="36" class="mr-2">
+                <v-icon size="20" color="grey">mdi-account</v-icon>
+              </v-avatar>
+              <span class="app-bar-user-name">{{ user?.name || 'John Doe' }}</span>
+              <v-icon size="18" class="ml-1 text-secondary">mdi-chevron-down</v-icon>
+            </div>
+          </template>
+          <v-list><v-list-item @click="logout" title="Logout" prepend-icon="mdi-logout" /></v-list>
+        </v-menu>
+      </div>
     </v-app-bar>
 
     <v-main class="app-main">
@@ -117,7 +119,7 @@
       :timeout="$store.state.snackbar.timeout"
       location="top right"
       elevation="4"
-      style="margin-top: 80px; margin-right: 16px;"
+      class="app-snackbar"
     >
       <div style="display: flex; align-items: center; width: 100%;">
         <v-icon 
@@ -186,7 +188,8 @@ export default {
         Chatbot: 'Chatbot',
         Users: 'Users',
         Templates: 'Templates',
-        PostHistory: 'Post History'
+        PostHistory: 'Post History',
+        SchedulePosts: 'Schedule Posts'
       };
       return names[this.$route.name] || this.$route.name || 'Dashboard Overview';
     },
@@ -367,14 +370,49 @@ export default {
   font-weight: 500;
 }
 
+/* Prevent app bar content from overlapping – allow wrap and consistent gap */
+.app-bar :deep(.v-toolbar__content) {
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 64px;
+  padding-right: 8px;
+}
+
+.app-bar-spacer {
+  min-width: 8px;
+}
+
+.app-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.app-bar-btn {
+  flex-shrink: 0;
+}
+
 .app-content {
   background: var(--light-bg, #FEFEFE);
+}
+
+/* Snackbar below app bar – no overlap */
+.app-snackbar {
+  margin-top: 72px !important;
+  margin-right: 16px !important;
+  z-index: 2500;
 }
 
 @media (max-width: 960px) {
   .app-bar-title { font-size: 0.95rem; }
   .app-bar-subtitle { display: none; }
   .app-bar-datetime { display: none; }
+}
+
+@media (max-width: 600px) {
+  .app-bar-btn-text { display: none; }
+  .app-bar-user-name { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 </style>
 

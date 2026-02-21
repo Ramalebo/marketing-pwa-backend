@@ -1,0 +1,42 @@
+# Build frontend and produce deploy artifact on push to master/main
+name: Build and package for deploy
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm install
+
+      - name: Install backend dependencies
+        run: cd backend && npm install
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Create deploy zip
+        run: node scripts/zip-dist.js
+
+      - name: Upload deploy artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-cpanel
+          path: dist-cpanel.zip
+          retention-days: 30

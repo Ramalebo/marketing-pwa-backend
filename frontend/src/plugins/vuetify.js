@@ -6,19 +6,22 @@ export default createVuetify({
   components,
   directives,
   defaults: {
-    /* attach: false = teleport to body so dropdowns are never clipped by cards/sidebar */
+    /* Teleport to body so dropdown menus show on top; z-index matches overlay-fix.css */
     VSelect: {
-      menuProps: { attach: false, zIndex: 2147483646 }
+      menuProps: { attach: false, zIndex: 99992, contentClass: 'dra-select-menu' }
     },
     VMenu: {
       attach: false,
-      zIndex: 2147483646
+      zIndex: 99992
     },
     VAutocomplete: {
-      menuProps: { attach: false, zIndex: 2147483646 }
+      menuProps: { attach: false, zIndex: 99992, contentClass: 'dra-select-menu' }
     },
     VCombobox: {
-      menuProps: { attach: false, zIndex: 2147483646 }
+      menuProps: { attach: false, zIndex: 99992, contentClass: 'dra-select-menu' }
+    },
+    VDialog: {
+      zIndex: 99991
     }
   },
   theme: {

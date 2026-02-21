@@ -1,58 +1,156 @@
 /**
- * Dropdown / overlay fix – dropdowns (v-select, v-menu) must appear on top and never clip.
+ * Dropdown / overlay fix – dialogs, menus, and selects must appear on top and never clip.
  * 1. Overlays teleport to body (attach: false in Vuetify defaults).
- * 2. Maximum z-index so nothing can cover them.
- * 3. No overflow clipping on cards that contain selects.
+ * 2. High z-index so nothing (app bar, cards, etc.) covers them.
+ * 3. No overflow clipping on containers that might contain dropdowns.
  */
 
-/* App stays below overlays */
+/* App stays below overlays – do not use isolation so overlay container can stack above when teleported */
 #app {
   position: relative;
   z-index: 0;
-  isolation: isolate;
 }
 
-/* Body’s overlay container: create stacking context at max z-index */
-body > .v-overlay-container {
-  position: fixed !important;
-  left: 0 !important;
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 2147483646 !important;
-  pointer-events: none !important;
-  display: block !important;
+/* Overlay container: very high so dropdowns always appear on top of app bar, cards, and dialogs */
+.v-overlay-container {
+  z-index: 99990 !important;
   contain: none !important;
 }
 
-/* Overlay panel and content: max z-index, content receives clicks */
-body > .v-overlay-container .v-overlay,
-.v-overlay {
-  z-index: 2147483646 !important;
-  pointer-events: none !important;
+/* Dialog overlays stay below menu/select overlays so dropdowns inside dialogs show on top */
+.v-dialog.v-overlay {
+  z-index: 99991 !important;
+}
+.v-dialog .v-overlay__content {
+  z-index: 99991 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
-body > .v-overlay-container .v-overlay__content,
+/* Menu and select dropdown overlays: above dialogs so dropdown lists are visible */
+.v-overlay:not(.v-dialog) {
+  z-index: 99992 !important;
+}
 .v-overlay__content {
-  z-index: 2147483646 !important;
+  z-index: 99992 !important;
   pointer-events: auto !important;
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 8px !important;
 }
 
-/* Select/autocomplete menu content */
+/* Override Vuetify .v-select__content { overflow: hidden } – it was clipping/hiding the list */
+.v-menu .v-overlay__content,
+.v-select__content,
+.v-autocomplete__content,
+.v-combobox__content,
+.dra-select-menu {
+  overflow: visible !important;
+  overflow-y: auto !important;
+  max-height: min(320px, 60vh) !important;
+  z-index: 99992 !important;
+  pointer-events: auto !important;
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+.dra-select-menu .v-list,
+.dra-select-menu .v-sheet,
+.dra-select-menu .v-list-item,
+.dra-select-menu .v-list-item-title {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+.dra-select-menu .v-list-item:hover {
+  background: #E3F2FD !important;
+  color: #1565C0 !important;
+}
+.dra-select-menu .v-list-item:hover .v-list-item-title {
+  color: #1565C0 !important;
+}
+
+.v-menu .v-overlay__content > *,
+.v-select__content > *,
+.v-autocomplete__content > *,
+.v-combobox__content > * {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+
+/* Prevent dropdown list overlapping the field – add gap so selected value is not hidden */
+.v-menu .v-overlay__content,
 .v-select__content,
 .v-autocomplete__content,
 .v-combobox__content {
-  z-index: 2147483647 !important;
-  pointer-events: auto !important;
+  margin-top: 4px !important;
 }
 
-/* Prevent card content areas from clipping dropdowns if overlay ever renders in-place */
+/* Dropdown list inside overlay – ensure it’s visible and clickable */
+.v-overlay__content .v-list,
+.v-overlay__content .v-sheet,
+.v-overlay__content .v-card,
+.v-select__content .v-list,
+.v-select__content .v-sheet,
+.v-autocomplete__content .v-list,
+.v-combobox__content .v-list,
+.dra-select-menu .v-list,
+.dra-select-menu .v-sheet {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  position: relative !important;
+  z-index: 1 !important;
+  overflow: visible !important;
+}
+
+/* Prevent the blue/primary overlay from covering option text – keep options readable */
+.v-overlay__content .v-list-item__overlay,
+.v-select__content .v-list-item__overlay,
+.v-autocomplete__content .v-list-item__overlay,
+.v-combobox__content .v-list-item__overlay,
+.dra-select-menu .v-list-item__overlay {
+  z-index: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+}
+.v-overlay__content .v-list-item__content,
+.v-overlay__content .v-list-item-title,
+.v-select__content .v-list-item__content,
+.v-select__content .v-list-item-title,
+.v-autocomplete__content .v-list-item__content,
+.v-autocomplete__content .v-list-item-title,
+.v-combobox__content .v-list-item__content,
+.v-combobox__content .v-list-item-title,
+.dra-select-menu .v-list-item__content,
+.dra-select-menu .v-list-item-title {
+  position: relative !important;
+  z-index: 1 !important;
+  background: transparent !important;
+}
+
+/* Prevent card content areas from clipping dropdowns (Post History, Email, Dashboard, all pages) */
+.card,
 .card .card-body,
 .card-body,
 .content-card .v-card-text,
 .app-card .v-card-text,
-.v-card-text {
+.v-card .v-card-text,
+.v-card {
   overflow: visible !important;
+}
+
+/* Dialogs: allow dropdowns inside to show (overflow visible on scrollable body so menu can extend) */
+.v-dialog .v-overlay__content {
+  overflow: visible !important;
+}
+
+.v-dialog .v-overlay__content > .v-card,
+.v-dialog .v-overlay__content > form > .v-card {
+  overflow: visible !important;
+}
+
+.v-dialog .v-card-text {
+  overflow-y: auto !important; /* keep scroll for long forms */
+  overflow-x: visible !important;
 }
 
 /* ============================================
@@ -60,7 +158,7 @@ body > .v-overlay-container .v-overlay__content,
    (hover, focus, active) so text never disappears
    ============================================ */
 
-/* All overlay content (v-menu, v-select, v-autocomplete, v-combobox) */
+/* All overlay content (v-menu, v-select, v-autocomplete, v-combobox) – force light */
 .v-overlay__content .v-list,
 .v-overlay__content .v-list-item,
 .v-select__content .v-list,
@@ -70,6 +168,14 @@ body > .v-overlay-container .v-overlay__content,
 .v-combobox__content .v-list,
 .v-combobox__content .v-list-item {
   color: #1a1a1a !important;
+  background-color: #ffffff !important;
+}
+
+.v-overlay__content .v-list-item:hover,
+.v-select__content .v-list-item:hover,
+.v-autocomplete__content .v-list-item:hover,
+.v-combobox__content .v-list-item:hover {
+  background-color: #E3F2FD !important;
 }
 
 .v-overlay__content .v-list-item-title,
@@ -129,6 +235,22 @@ body > .v-overlay-container .v-overlay__content,
 .v-overlay__content .v-list-item *,
 .v-select__content .v-list-item *,
 .v-autocomplete__content .v-list-item *,
-.v-combobox__content .v-list-item * {
+.v-combobox__content .v-list-item *,
+.dra-select-menu .v-list-item * {
   opacity: 1 !important;
+}
+
+/* Default state for dropdown options: white background, dark text (override any theme) */
+.v-select__content .v-list-item,
+.v-autocomplete__content .v-list-item,
+.v-combobox__content .v-list-item,
+.dra-select-menu .v-list-item {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+.v-select__content .v-list-item .v-list-item-title,
+.v-autocomplete__content .v-list-item .v-list-item-title,
+.v-combobox__content .v-list-item .v-list-item-title,
+.dra-select-menu .v-list-item .v-list-item-title {
+  color: #1a1a1a !important;
 }

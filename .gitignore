@@ -12,3 +12,8 @@ backend/uploads/
 *.swo
 *~
 
+# Deploy artifacts (use GitHub Actions artifact or build locally)
+dist-cpanel.zip
+deployment-package/
+deployment-package.zip
+
