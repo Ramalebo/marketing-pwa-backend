@@ -92,6 +92,8 @@ app.use('/api/post-history', require('./routes/post-history'));
 app.use('/api/scheduled-posts', require('./routes/scheduled-posts'));
 app.use('/api/customer-contacts', require('./routes/customer-contacts'));
 app.use('/api/meta', require('./routes/meta-compliance'));
+app.use('/api/optimization', require('./routes/optimization'));
+app.use('/api/beacons', require('./routes/beacons'));
 
 // Frontend is served separately on cPanel, so we don't serve it here
 // This backend only handles API requests

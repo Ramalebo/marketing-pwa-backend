@@ -1,0 +1,334 @@
+/**
+ * Clean layout – MarketHub-style: dark sidebar, white content, minimal KPIs
+ * Load after dra-portal.css / global.css
+ */
+
+/* ----- Dark sidebar ----- */
+.app-wrapper.clean-layout .app-drawer,
+.app-wrapper.clean-layout .app-sidebar {
+  background: #374151 !important;
+  border-right: 1px solid #4b5563 !important;
+}
+
+.app-wrapper.clean-layout .sidebar-header {
+  border-bottom-color: #4b5563 !important;
+  padding: 20px 16px 16px !important;
+}
+
+.app-wrapper.clean-layout .sidebar-title {
+  color: #f9fafb !important;
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  margin: 0 0 2px 0 !important;
+}
+
+.app-wrapper.clean-layout .sidebar-subtitle {
+  display: block;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.app-wrapper.clean-layout .sidebar-brand .v-avatar {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.app-wrapper.clean-layout .sidebar-brand .v-icon {
+  color: #9CCB48 !important;
+}
+
+.app-wrapper.clean-layout .nav-section-title {
+  color: #9ca3af !important;
+  padding: 12px 16px 6px !important;
+}
+
+.app-wrapper.clean-layout .sidebar-list :deep(.v-list-item) {
+  color: #e5e7eb !important;
+}
+
+.app-wrapper.clean-layout .sidebar-list :deep(.v-list-item:hover) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+.app-wrapper.clean-layout .sidebar-list :deep(.v-list-item--active) {
+  background: rgba(156, 203, 72, 0.2) !important;
+  color: #9CCB48 !important;
+  border-left: 3px solid #9CCB48 !important;
+}
+
+.app-wrapper.clean-layout .sidebar-list :deep(.v-list-item--active .v-icon) {
+  color: #9CCB48 !important;
+}
+
+.app-wrapper.clean-layout .sidebar-list :deep(.v-list-item-title) {
+  color: inherit !important;
+  opacity: 1 !important;
+}
+
+.app-wrapper.clean-layout .sidebar-footer {
+  border-top-color: #4b5563 !important;
+}
+
+.app-wrapper.clean-layout .sidebar-footer-item {
+  color: #fca5a5 !important;
+}
+
+.app-wrapper.clean-layout .sidebar-footer-item:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+}
+
+/* ----- White content area ----- */
+.app-wrapper.clean-layout .app-content {
+  background: #ffffff !important;
+}
+
+.app-wrapper.clean-layout .app-main {
+  background: #ffffff !important;
+}
+
+.app-wrapper.clean-layout .app-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ----- Clean page header (title + subtitle in content) ----- */
+.clean-page-header {
+  margin-bottom: 28px;
+}
+
+.clean-page-header__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.03em;
+  margin: 0 0 6px 0;
+  line-height: 1.25;
+}
+
+.clean-page-header__subtitle {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ----- Clean KPI cards (white, rounded, icon + label + value) ----- */
+.clean-kpi-row {
+  margin-bottom: 28px;
+}
+
+.clean-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  height: 100%;
+  min-height: 120px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.clean-kpi-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: #d1d5db;
+}
+
+.clean-kpi-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.clean-kpi-card__icon--reach { background: #dbeafe; color: #2563eb; }
+.clean-kpi-card__icon--engagement { background: #d1fae5; color: #059669; }
+.clean-kpi-card__icon--conversion { background: #fce7f3; color: #db2777; }
+.clean-kpi-card__icon--spend { background: #fef3c7; color: #d97706; }
+
+.clean-kpi-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.clean-kpi-card__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.clean-kpi-card__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.clean-kpi-card__change {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.clean-kpi-card__change.positive { color: #059669; }
+.clean-kpi-card__change.negative { color: #dc2626; }
+
+/* ----- Category tabs (text tabs under KPIs) ----- */
+.clean-category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0;
+}
+
+.clean-category-tabs .v-btn {
+  text-transform: none;
+  font-weight: 500;
+  color: #6b7280;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -1px;
+}
+
+.clean-category-tabs .v-btn:hover {
+  color: #111827;
+  background: #f9fafb;
+}
+
+.clean-category-tabs .v-btn.v-btn--active {
+  color: #111827;
+  font-weight: 600;
+  border-bottom: 2px solid #9CCB48;
+  background: transparent;
+}
+
+/* ----- App bar: date/time and user area ----- */
+.clean-layout .app-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.clean-layout .app-bar-datetime {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+.clean-layout .app-bar .user-menu {
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.clean-layout .app-bar .user-menu:hover {
+  background: #f3f4f6;
+}
+
+/* ----- Cards: consistent rounded corners and shadow ----- */
+.clean-layout .app-card {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.clean-layout .app-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ----- Section titles ----- */
+.clean-layout .app-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+/* ----- General content spacing ----- */
+.clean-layout .app-layout {
+  padding-bottom: 48px;
+}
+
+.clean-layout .dashboard-page,
+.clean-layout .app-page {
+  background: #ffffff !important;
+}
+
+/* Display page: clean header and KPI cards */
+.clean-layout .display-page .display-header {
+  margin-bottom: 28px;
+}
+
+.clean-layout .display-page .display-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.03em;
+  margin: 0 0 6px 0;
+}
+
+.clean-layout .display-page .display-subtitle {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.clean-layout .display-page .kpi-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.clean-layout .display-page .kpi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.clean-layout .display-page .kpi-content .kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.clean-layout .display-page .kpi-content .kpi-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Campaigns (Ads) page: clean header in campaigns tab */
+.clean-layout .ads-container .text-h4 {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.clean-layout .ads-container .v-card {
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}

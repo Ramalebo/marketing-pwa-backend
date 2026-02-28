@@ -1,17 +1,22 @@
 <template>
   <div class="ads-container">
     <v-container fluid class="pa-6">
+      <!-- Top-level tabs: Campaigns | Bulk Edit | Platform Specs | UTM & Export -->
+      <v-tabs v-model="adsViewTab" class="mb-4" color="primary" style="border-bottom: 1px solid #e5e7eb;">
+        <v-tab value="campaigns" style="font-weight: 600; text-transform: none;">Campaigns</v-tab>
+        <v-tab value="bulk" style="font-weight: 600; text-transform: none;">Bulk Edit</v-tab>
+        <v-tab value="specs" style="font-weight: 600; text-transform: none;">Platform Specs</v-tab>
+        <v-tab value="utm" style="font-weight: 600; text-transform: none;">UTM & Export</v-tab>
+      </v-tabs>
+      <v-window v-model="adsViewTab">
+        <v-window-item value="campaigns">
       <!-- Header Section -->
       <v-row class="mb-6">
         <v-col cols="12">
           <div class="d-flex align-center justify-space-between flex-wrap">
-            <div>
-              <h1 class="text-h4 font-weight-bold mb-2" style="color: #1a1a1a; letter-spacing: -0.5px;">
-                AI Ad Generation
-              </h1>
-              <p class="text-body-1 mb-0" style="color: #6b7280;">
-                Create, manage, and publish ads across multiple social media platforms
-              </p>
+            <div class="clean-page-header" style="margin-bottom: 0;">
+              <h1 class="clean-page-header__title">Campaigns</h1>
+              <p class="clean-page-header__subtitle">Create, manage, and publish ads across multiple social media platforms.</p>
             </div>
             <v-btn
               color="primary"
@@ -27,8 +32,8 @@
         </v-col>
       </v-row>
 
-      <v-row v-if="ads.length > 0">
-        <v-col cols="12" md="4" v-for="ad in ads" :key="ad.id || ad._id">
+      <v-row v-if="(ads || []).length > 0">
+        <v-col cols="12" md="4" v-for="ad in (ads || [])" :key="ad.id || ad._id">
           <v-card
             elevation="0"
             style="border-radius: 12px; border: 1px solid #e5e7eb; height: 100%; transition: all 0.3s;"
@@ -78,6 +83,14 @@
                 >
                   {{ ad.type }}
                 </v-chip>
+                <span
+                  v-if="ad.platform"
+                  class="ads-platform-badge"
+                  :style="{ background: getPlatformColor(ad.platform) + '22', borderColor: getPlatformColor(ad.platform), color: getPlatformColor(ad.platform) }"
+                >
+                  <span class="ads-platform-badge__icon">{{ getPlatformIcon(ad.platform) }}</span>
+                  {{ getPlatformShortName(ad.platform) }}
+                </span>
               </div>
             </v-card-text>
             <v-card-actions class="pa-4 ads-card-actions" style="background: #f9fafb; border-top: 1px solid #e5e7eb;">
@@ -137,6 +150,219 @@
           </v-card>
         </v-col>
       </v-row>
+        </v-window-item>
+
+        <!-- Bulk Edit -->
+        <v-window-item value="bulk">
+          <v-card elevation="0" class="pa-6" style="border: 1px solid #e5e7eb; border-radius: 12px;">
+            <h2 class="text-h6 font-weight-bold mb-2" style="color: #1a1a1a;">Bulk Edit</h2>
+            <p class="text-body-2 text-medium-emphasis mb-4">Apply one change to multiple ads.</p>
+            <v-row class="mb-4">
+              <v-col cols="12" md="4">
+                <v-select
+                  v-model="bulkField"
+                  :items="bulkFieldItems"
+                  item-title="label"
+                  item-value="value"
+                  label="Field to update"
+                  density="default"
+                  variant="outlined"
+                  hide-details
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-select
+                  v-if="bulkField === 'platform'"
+                  v-model="bulkValue"
+                  :items="ALL_PLATFORMS"
+                  label="New value"
+                  density="default"
+                  variant="outlined"
+                  hide-details
+                ></v-select>
+                <v-select
+                  v-else-if="bulkField === 'cta'"
+                  v-model="bulkValue"
+                  :items="allCtas"
+                  label="New value"
+                  density="default"
+                  variant="outlined"
+                  hide-details
+                ></v-select>
+                <v-select
+                  v-else-if="bulkField === 'status'"
+                  v-model="bulkValue"
+                  :items="['draft', 'pending', 'approved', 'published', 'archived']"
+                  label="New status"
+                  density="default"
+                  variant="outlined"
+                  hide-details
+                ></v-select>
+                <v-select
+                  v-else-if="bulkField === 'channel'"
+                  v-model="bulkValue"
+                  :items="channelOptions"
+                  item-title="title"
+                  item-value="value"
+                  label="New channel"
+                  density="default"
+                  variant="outlined"
+                  hide-details
+                ></v-select>
+                <v-text-field
+                  v-else
+                  v-model="bulkValue"
+                  :label="'New value for ' + (bulkFieldItems.find(f => f.value === bulkField)?.label || bulkField)"
+                  density="default"
+                  variant="outlined"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="4" class="d-flex align-center">
+                <v-btn color="primary" @click="applyBulk" :disabled="bulkSelectedIds.length === 0 || !bulkValue" variant="elevated">
+                  Apply to {{ bulkSelectedIds.length }}
+                </v-btn>
+                <v-chip v-if="bulkFlash" color="success" class="ml-3">Applied!</v-chip>
+              </v-col>
+            </v-row>
+            <div class="d-flex align-center gap-2 mb-3">
+              <v-select
+                v-model="bulkFilterPlatform"
+                :items="[{ title: 'All platforms', value: 'All' }, ...(ALL_PLATFORMS || []).map(p => ({ title: p, value: p }))]"
+                item-title="title"
+                item-value="value"
+                density="compact"
+                variant="outlined"
+                hide-details
+                style="max-width: 200px;"
+              ></v-select>
+              <v-btn size="small" variant="outlined" @click="bulkToggleAll">{{ bulkSelectedIds.length === bulkFilteredAds.length ? 'Deselect all' : 'Select all' }}</v-btn>
+              <span class="text-caption text-medium-emphasis">{{ bulkSelectedIds.length }} selected</span>
+            </div>
+            <div class="ads-bulk-header ads-bulk-row" style="background: #f3f4f6;">
+              <div></div>
+              <div>Campaign / Ad Set</div>
+              <div>Headline</div>
+              <div>Platform</div>
+              <div>Format</div>
+              <div>Status</div>
+            </div>
+            <div v-for="ad in bulkFilteredAds" :key="ad.id || ad._id" class="ads-bulk-row" :class="{ selected: bulkSelectedIds.includes(ad.id || ad._id) }" @click="bulkToggleAd(ad)">
+              <div @click.stop>
+                <v-checkbox hide-details :model-value="bulkSelectedIds.includes(ad.id || ad._id)" color="primary" density="compact" @click.stop="bulkToggleAd(ad)" />
+              </div>
+              <div class="text-truncate">{{ ad.campaign || ad.title }} / {{ ad.adset || '—' }}</div>
+              <div class="text-truncate">{{ ad.headline || ad.title }}</div>
+              <div>
+                <span v-if="ad.platform" class="ads-platform-badge ads-platform-badge--sm" :style="{ background: getPlatformColor(ad.platform) + '22', borderColor: getPlatformColor(ad.platform), color: getPlatformColor(ad.platform) }">{{ getPlatformShortName(ad.platform) }}</span>
+                <span v-else>—</span>
+              </div>
+              <div class="text-caption text-medium-emphasis">{{ ad.format || '—' }}</div>
+              <v-chip size="x-small" :color="getStatusColor(ad.status)">{{ ad.status }}</v-chip>
+            </div>
+            <p v-if="bulkFilteredAds.length === 0" class="text-body-2 text-medium-emphasis pa-4">No ads to show. Create ads in the Campaigns tab.</p>
+          </v-card>
+        </v-window-item>
+
+        <!-- Platform Specs -->
+        <v-window-item value="specs">
+          <v-card elevation="0" class="pa-6" style="border: 1px solid #e5e7eb; border-radius: 12px;">
+            <h2 class="text-h6 font-weight-bold mb-4" style="color: #1a1a1a;">Platform Specs</h2>
+            <v-tabs v-model="specsPlatform" class="mb-4">
+              <v-tab v-for="p in (ALL_PLATFORMS || [])" :key="p" :value="p" style="text-transform: none;">{{ getPlatformShortName(p) }}</v-tab>
+            </v-tabs>
+            <v-window v-model="specsPlatform">
+              <v-window-item v-for="p in (ALL_PLATFORMS || [])" :key="p" :value="p">
+                <div v-if="PLATFORMS[p]" class="ads-specs-grid">
+                  <div class="ads-specs-card">
+                    <div class="ads-specs-label">Character limits</div>
+                    <div v-for="(val, key) in PLATFORMS[p].limits" :key="key" class="d-flex justify-space-between mb-2">
+                      <span class="text-caption">{{ key }}</span>
+                      <strong :style="{ color: getPlatformColor(p) }">{{ val }}</strong>
+                    </div>
+                  </div>
+                  <div class="ads-specs-card">
+                    <div class="ads-specs-label">Formats</div>
+                    <div class="flex-wrap">
+                      <span v-for="f in PLATFORMS[p].formats" :key="f" class="ads-specs-tag">{{ f }}</span>
+                    </div>
+                  </div>
+                  <div class="ads-specs-card">
+                    <div class="ads-specs-label">Placements</div>
+                    <div class="flex-wrap">
+                      <span v-for="pl in PLATFORMS[p].placements" :key="pl" class="ads-specs-tag">{{ pl }}</span>
+                    </div>
+                  </div>
+                  <div class="ads-specs-card">
+                    <div class="ads-specs-label">CTAs</div>
+                    <div class="flex-wrap">
+                      <span v-for="c in PLATFORMS[p].ctas" :key="c" class="ads-specs-tag">{{ c }}</span>
+                    </div>
+                  </div>
+                  <div class="ads-specs-card">
+                    <div class="ads-specs-label">Objectives</div>
+                    <div class="flex-wrap">
+                      <span v-for="a in PLATFORMS[p].adTypes" :key="a" class="ads-specs-tag">{{ a }}</span>
+                    </div>
+                  </div>
+                </div>
+                <p v-if="PLATFORMS[p].note" class="text-body-2 text-medium-emphasis mt-4">{{ PLATFORMS[p].note }}</p>
+              </v-window-item>
+            </v-window>
+          </v-card>
+        </v-window-item>
+
+        <!-- UTM & Export -->
+        <v-window-item value="utm">
+          <v-card elevation="0" class="pa-6" style="border: 1px solid #e5e7eb; border-radius: 12px;">
+            <h2 class="text-h6 font-weight-bold mb-2" style="color: #1a1a1a;">UTM & Export</h2>
+            <p class="text-body-2 text-medium-emphasis mb-4">Tracking params and CSV export for all ads.</p>
+            <v-row>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="utmAdId"
+                  :items="ads || []"
+                  :item-title="(a) => (a.title || 'Ad') + (a.platform ? ' (' + getPlatformShortName(a.platform) + ')' : '')"
+                  item-value="id"
+                  label="Select ad"
+                  density="default"
+                  variant="outlined"
+                  hide-details
+                  clearable
+                ></v-select>
+              </v-col>
+            </v-row>
+            <template v-if="selectedUtmAd">
+              <div class="ads-utm-panel mt-4">
+                <div class="ads-specs-label mb-2">UTM params</div>
+                <div v-for="row in utmParamRows" :key="row.key" class="ads-utm-param">
+                  <span class="ads-utm-key">{{ row.key }}</span>
+                  <span class="ads-utm-val">{{ row.val }}</span>
+                </div>
+              </div>
+              <div class="ads-utm-panel mt-4">
+                <div class="ads-specs-label mb-2">Ad name</div>
+                <div class="d-flex align-center gap-2">
+                  <span class="flex-grow-1" style="font-family: monospace;">{{ currentAdName }}</span>
+                  <v-btn size="small" variant="outlined" @click="copyUtm(currentAdName, 'name')">{{ utmCopied === 'name' ? 'Copied!' : 'Copy' }}</v-btn>
+                </div>
+              </div>
+              <div class="ads-utm-panel mt-4">
+                <div class="ads-specs-label mb-2">Full URL with UTM</div>
+                <div class="d-flex align-center gap-2 flex-wrap">
+                  <span class="flex-grow-1 text-break" style="font-size: 12px;">{{ selectedUtmAd.destinationUrl || selectedUtmAd.url || '' }}{{ currentUtm ? '?' + currentUtm : '' }}</span>
+                  <v-btn size="small" variant="outlined" @click="copyUtm((selectedUtmAd.destinationUrl || selectedUtmAd.url || '') + (currentUtm ? '?' + currentUtm : ''), 'url')">{{ utmCopied === 'url' ? 'Copied!' : 'Copy' }}</v-btn>
+                </div>
+              </div>
+            </template>
+            <div class="mt-6">
+              <div class="text-subtitle-2 font-weight-bold mb-2">Export all ads to CSV</div>
+              <p class="text-body-2 text-medium-emphasis mb-2">Includes ad name, campaign, ad set, platform, headline, CTA, base URL, and full tracking URL.</p>
+              <v-btn color="primary" variant="elevated" @click="exportCsv">Export CSV</v-btn>
+            </div>
+          </v-card>
+        </v-window-item>
+      </v-window>
 
     <!-- Confirmation Dialog -->
     <ConfirmationDialog
@@ -234,9 +460,128 @@
                   class="app-select"
                   style="background: #ffffff;"
                 ></v-text-field>
+                <v-row class="mt-4">
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="form.campaign"
+                      label="Campaign"
+                      density="default"
+                      variant="outlined"
+                      hide-details="auto"
+                      class="app-select"
+                      style="background: #ffffff;"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="form.adset"
+                      label="Ad Set"
+                      density="default"
+                      variant="outlined"
+                      hide-details="auto"
+                      class="app-select"
+                      style="background: #ffffff;"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-select
+                  v-model="form.platform"
+                  :items="ALL_PLATFORMS"
+                  label="Platform (for specs & UTM)"
+                  density="default"
+                  variant="outlined"
+                  hide-details="auto"
+                  clearable
+                  class="app-select mt-4"
+                  style="background: #ffffff;"
+                ></v-select>
+                <template v-if="form.platform && PLATFORMS[form.platform]">
+                  <v-row class="mt-4">
+                    <v-col cols="12" sm="6">
+                      <v-select
+                        v-model="form.format"
+                        :items="PLATFORMS[form.platform].formats"
+                        label="Format"
+                        density="default"
+                        variant="outlined"
+                        hide-details="auto"
+                        class="app-select"
+                        style="background: #ffffff;"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                      <v-select
+                        v-model="form.placement"
+                        :items="PLATFORMS[form.platform].placements"
+                        label="Placement"
+                        density="default"
+                        variant="outlined"
+                        hide-details="auto"
+                        class="app-select"
+                        style="background: #ffffff;"
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="6">
+                      <v-select
+                        v-model="form.adType"
+                        :items="PLATFORMS[form.platform].adTypes"
+                        label="Objective"
+                        density="default"
+                        variant="outlined"
+                        hide-details="auto"
+                        class="app-select"
+                        style="background: #ffffff;"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                      <v-select
+                        v-model="form.cta"
+                        :items="PLATFORMS[form.platform].ctas"
+                        label="CTA Button"
+                        density="default"
+                        variant="outlined"
+                        hide-details="auto"
+                        class="app-select"
+                        style="background: #ffffff;"
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                  <v-text-field
+                    v-if="getPlatformLimits(form.platform).headline > 0"
+                    v-model="form.headline"
+                    :label="'Headline (max ' + getPlatformLimits(form.platform).headline + ')'"
+                    density="default"
+                    variant="outlined"
+                    hide-details="auto"
+                    class="app-select mt-4"
+                    style="background: #ffffff;"
+                  ></v-text-field>
+                  <div v-if="form.platform && getPlatformLimits(form.platform).headline > 0" class="ads-char-bar mt-1">
+                    <div class="ads-char-bar-track">
+                      <div
+                        class="ads-char-bar-fill"
+                        :class="charBarClass((form.headline || '').length, getPlatformLimits(form.platform).headline)"
+                        :style="{ width: Math.min(((form.headline || '').length / getPlatformLimits(form.platform).headline) * 100, 100) + '%' }"
+                      ></div>
+                    </div>
+                    <span class="ads-char-bar-count" :class="{ over: (form.headline || '').length > getPlatformLimits(form.platform).headline }">{{ (form.headline || '').length }} / {{ getPlatformLimits(form.platform).headline }}</span>
+                  </div>
+                </template>
+                <v-text-field
+                  v-model="form.destinationUrl"
+                  label="Destination URL"
+                  density="default"
+                  variant="outlined"
+                  hide-details="auto"
+                  class="app-select mt-4"
+                  style="background: #ffffff;"
+                  placeholder="https://..."
+                ></v-text-field>
                 <v-textarea
                   v-model="form.description"
-                  label="Description"
+                  :label="form.platform && getPlatformLimits(form.platform).description < 999 ? 'Description (max ' + getPlatformLimits(form.platform).description + ')' : 'Description'"
                   rows="3"
                   density="default"
                   variant="outlined"
@@ -244,6 +589,41 @@
                   class="app-select mt-4"
                   style="background: #ffffff;"
                 ></v-textarea>
+                <div v-if="form.platform && getPlatformLimits(form.platform).description < 999" class="ads-char-bar mt-1">
+                  <div class="ads-char-bar-track">
+                    <div
+                      class="ads-char-bar-fill"
+                      :class="charBarClass((form.description || '').length, getPlatformLimits(form.platform).description)"
+                      :style="{ width: Math.min(((form.description || '').length / getPlatformLimits(form.platform).description) * 100, 100) + '%' }"
+                    ></div>
+                  </div>
+                  <span class="ads-char-bar-count" :class="{ over: (form.description || '').length > getPlatformLimits(form.platform).description }">{{ (form.description || '').length }} / {{ getPlatformLimits(form.platform).description }}</span>
+                </div>
+                <!-- Ad Spec Advisor -->
+                <div v-if="form.platform" class="mt-6 pa-4 rounded-lg" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+                  <div class="d-flex align-center mb-3">
+                    <v-icon color="primary" size="22" class="mr-2">mdi-auto-fix</v-icon>
+                    <span class="font-weight-bold">Ad Spec Advisor</span>
+                  </div>
+                  <p class="text-body-2 text-medium-emphasis mb-3">Recommendations for best results on {{ form.platform }}.</p>
+                  <div v-if="advisorSpecs" class="text-body-2 mb-3">
+                    <span v-if="advisorSpecs.headline?.tip" class="d-block mb-1"><strong>Headline:</strong> {{ advisorSpecs.headline.tip }}</span>
+                    <span v-if="advisorSpecs.description?.tip" class="d-block mb-1"><strong>Description:</strong> {{ advisorSpecs.description.tip }}</span>
+                    <span v-if="advisorSpecs.creative?.tip" class="d-block mb-1"><strong>Creative:</strong> {{ advisorSpecs.creative.tip }}</span>
+                  </div>
+                  <div v-if="advisorAdvice && (advisorAdvice.compliance?.length || advisorAdvice.optimizations?.length)">
+                    <div v-for="c in advisorAdvice.compliance" :key="'c-'+c.field" class="d-flex align-center mb-1">
+                      <v-icon v-if="c.status === 'ok'" color="success" size="18" class="mr-2">mdi-check-circle</v-icon>
+                      <v-icon v-else color="error" size="18" class="mr-2">mdi-alert-circle</v-icon>
+                      <span class="text-caption">{{ c.status === 'ok' ? c.field + ' ' + c.current + '/' + c.max : c.message }}</span>
+                    </div>
+                    <div v-for="(o, i) in advisorAdvice.optimizations" :key="'o-'+i" class="d-flex align-center mb-1">
+                      <v-icon color="primary" size="18" class="mr-2">mdi-lightbulb-outline</v-icon>
+                      <span class="text-caption">{{ o.tip }}</span>
+                    </div>
+                  </div>
+                  <v-btn size="small" variant="tonal" color="primary" class="mt-2" @click="runAdvisorAdvise" :loading="advisorLoading">Check my copy</v-btn>
+                </div>
                 <v-select
                   v-model="form.type"
                   :items="adTypes"
@@ -719,6 +1099,17 @@
 <script>
 import axios from 'axios';
 import ConfirmationDialog from '../components/ConfirmationDialog.vue';
+import {
+  PLATFORMS,
+  ALL_PLATFORMS,
+  generateUTM,
+  generateAdName,
+  getPlatformColor,
+  getPlatformIcon,
+  getPlatformShortName,
+  getPlatformLimits
+} from '../config/adPlatforms';
+import '../assets/styles/ads-adflow.css';
 
 export default {
   name: 'Ads',
@@ -727,6 +1118,18 @@ export default {
   },
   data() {
     return {
+      adsViewTab: 'campaigns',
+      bulkFilterPlatform: 'All',
+      bulkSelectedIds: [],
+      bulkField: 'campaign',
+      bulkValue: '',
+      bulkFlash: false,
+      specsPlatform: 'Meta Ads',
+      utmAdId: null,
+      utmCopied: '',
+      advisorSpecs: null,
+      advisorAdvice: null,
+      advisorLoading: false,
       loading: false,
       saving: false,
       generating: false,
@@ -760,6 +1163,15 @@ export default {
         type: 'image',
         clientId: null,
         channel: 'social',
+        campaign: '',
+        adset: '',
+        platform: '',
+        format: '',
+        placement: '',
+        adType: '',
+        cta: '',
+        headline: '',
+        destinationUrl: '',
         displayType: 'billboard',
         reach: null,
         engagement: null,
@@ -805,21 +1217,86 @@ export default {
   },
   computed: {
     clientOptions() {
+      const list = this.clients || [];
       return [
         { title: 'None', value: null },
-        ...this.clients.map(c => ({ title: c.name, value: c.id || c._id }))
+        ...list.map(c => ({ title: c.name, value: c.id || c._id }))
       ];
+    },
+    bulkFieldItems() {
+      return [
+        { label: 'Campaign', value: 'campaign' },
+        { label: 'Ad Set', value: 'adset' },
+        { label: 'Platform', value: 'platform' },
+        { label: 'Format', value: 'format' },
+        { label: 'Placement', value: 'placement' },
+        { label: 'Objective', value: 'adType' },
+        { label: 'CTA', value: 'cta' },
+        { label: 'Headline', value: 'headline' },
+        { label: 'Destination URL', value: 'destinationUrl' },
+        { label: 'Status', value: 'status' },
+        { label: 'Channel', value: 'channel' }
+      ];
+    },
+    bulkFilteredAds() {
+      const list = this.ads || [];
+      if (this.bulkFilterPlatform === 'All') return list;
+      return list.filter(a => a.platform === this.bulkFilterPlatform);
+    },
+    selectedUtmAd() {
+      if (!this.utmAdId) return this.ads[0] || null;
+      const list = this.ads || [];
+      return list.find(a => (a.id || a._id) === this.utmAdId) || list[0] || null;
+    },
+    currentUtm() {
+      const ad = this.selectedUtmAd;
+      if (!ad) return '';
+      return generateUTM(ad.campaign || ad.title, ad.adset || '', ad.headline || ad.title, ad.platform || '');
+    },
+    currentAdName() {
+      const ad = this.selectedUtmAd;
+      if (!ad) return '';
+      const list = this.ads || [];
+      const idx = list.findIndex(a => (a.id || a._id) === (ad.id || ad._id));
+      return generateAdName(ad.campaign || ad.title, ad.adset || '', idx, ad.platform || '');
+    },
+    utmParamRows() {
+      const ad = this.selectedUtmAd;
+      if (!ad) return [];
+      const src = (ad.platform && PLATFORMS[ad.platform]) ? PLATFORMS[ad.platform].utmSource : (ad.platform || '').toLowerCase().replace(/\s+/g, '_');
+      return [
+        { key: 'utm_source', val: src },
+        { key: 'utm_medium', val: 'paid_social' },
+        { key: 'utm_campaign', val: (ad.campaign || ad.title || '').toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') },
+        { key: 'utm_content', val: (ad.adset || '').toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') },
+        { key: 'utm_term', val: (ad.headline || ad.title || '').slice(0, 30).toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') }
+      ];
+    },
+    allCtas() {
+      const set = new Set();
+      ALL_PLATFORMS.forEach(p => { (PLATFORMS[p].ctas || []).forEach(c => set.add(c)); });
+      return Array.from(set).sort();
     }
   },
   mounted() {
     this.loadClients();
     this.loadAds();
   },
+  watch: {
+    ads(val) {
+      if (val && val.length && !this.utmAdId) this.utmAdId = val[0].id || val[0]._id;
+    },
+    'form.platform'(val) {
+      this.advisorAdvice = null;
+      if (val) this.loadAdvisorSpecs();
+      else this.advisorSpecs = null;
+    }
+  },
   methods: {
     async loadClients() {
       try {
         const response = await axios.get('/clients');
-        this.clients = response.data;
+        this.clients = Array.isArray(response.data) ? response.data : [];
       } catch (error) {
         console.error('Error loading clients:', error);
       }
@@ -828,7 +1305,7 @@ export default {
       this.loading = true;
       try {
         const response = await axios.get('/ads');
-        this.ads = response.data;
+        this.ads = Array.isArray(response.data) ? response.data : [];
       } catch (error) {
         console.error('Error loading ads:', error);
       } finally {
@@ -842,8 +1319,17 @@ export default {
           title: ad.title || '',
           description: ad.description || '',
           type: ad.type || 'image',
-          clientId: ad.clientId?.id || ad.clientId?._id || null,
+          clientId: (ad.clientId && (typeof ad.clientId === 'object' ? (ad.clientId.id || ad.clientId._id) : ad.clientId)) || null,
           channel: ad.channel || 'social',
+          campaign: ad.campaign || '',
+          adset: ad.adset || '',
+          platform: ad.platform || '',
+          format: ad.format || '',
+          placement: ad.placement || '',
+          adType: ad.adType || '',
+          cta: ad.cta || '',
+          headline: ad.headline || '',
+          destinationUrl: ad.destinationUrl || ad.destination_url || '',
           displayType: ad.displayType || 'billboard',
           reach: ad.reach != null ? Number(ad.reach) : null,
           engagement: ad.engagement != null ? Number(ad.engagement) : null,
@@ -870,6 +1356,15 @@ export default {
         type: 'image',
         clientId: null,
         channel: 'social',
+        campaign: '',
+        adset: '',
+        platform: '',
+        format: '',
+        placement: '',
+        adType: '',
+        cta: '',
+        headline: '',
+        destinationUrl: '',
         displayType: 'billboard',
         reach: null,
         engagement: null,
@@ -1004,6 +1499,98 @@ export default {
       }
       this.confirmDialog = false;
       this.confirmCallback = null;
+    },
+    bulkToggleAd(ad) {
+      const id = ad.id || ad._id;
+      if (this.bulkSelectedIds.includes(id)) {
+        this.bulkSelectedIds = this.bulkSelectedIds.filter(x => x !== id);
+      } else {
+        this.bulkSelectedIds = [...this.bulkSelectedIds, id];
+      }
+    },
+    bulkToggleAll() {
+      if (this.bulkSelectedIds.length === this.bulkFilteredAds.length) {
+        this.bulkSelectedIds = [];
+      } else {
+        this.bulkSelectedIds = this.bulkFilteredAds.map(a => a.id || a._id);
+      }
+    },
+    async applyBulk() {
+      if (!this.bulkValue || this.bulkSelectedIds.length === 0) return;
+      try {
+        await axios.patch('/ads/bulk', {
+          ids: this.bulkSelectedIds,
+          field: this.bulkField,
+          value: this.bulkValue
+        });
+        this.loadAds();
+        this.bulkFlash = true;
+        setTimeout(() => { this.bulkFlash = false; }, 2500);
+        this.$store.dispatch('showSnackbar', { text: 'Bulk update applied.', color: 'success' });
+      } catch (e) {
+        this.$store.dispatch('showSnackbar', { text: e.response?.data?.message || e.message || 'Bulk update failed', color: 'error' });
+      }
+    },
+    copyUtm(text, key) {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        this.utmCopied = key;
+        setTimeout(() => { this.utmCopied = ''; }, 2000);
+        this.$store.dispatch('showSnackbar', { text: 'Copied to clipboard', color: 'success' });
+      });
+    },
+    exportCsv() {
+      const headers = 'Ad Name,Campaign,Ad Set,Platform,Format,Headline,CTA,Base URL,Full Tracking URL';
+      const list = this.ads || [];
+      const rows = list.map((a, i) => {
+        const name = generateAdName(a.campaign || a.title, a.adset || '', i, a.platform || '');
+        const utm = generateUTM(a.campaign || a.title, a.adset || '', a.headline || a.title, a.platform || '');
+        const base = a.destinationUrl || a.url || '';
+        const full = base ? (base.includes('?') ? base + '&' + utm : base + '?' + utm) : utm;
+        return `"${(name || '').replace(/"/g, '""')}","${(a.campaign || a.title || '').replace(/"/g, '""')}","${(a.adset || '').replace(/"/g, '""')}","${(a.platform || '').replace(/"/g, '""')}","${(a.format || '').replace(/"/g, '""')}","${(a.headline || a.title || '').replace(/"/g, '""')}","${(a.cta || '').replace(/"/g, '""')}","${(base || '').replace(/"/g, '""')}","${full.replace(/"/g, '""')}"`;
+      });
+      const csv = [headers, ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'adflow_export_' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      this.$store.dispatch('showSnackbar', { text: 'CSV downloaded', color: 'success' });
+    },
+    async loadAdvisorSpecs() {
+      if (!this.form.platform) return;
+      try {
+        const { data } = await axios.get('/optimization/recommendations', {
+          params: { platform: this.form.platform }
+        });
+        this.advisorSpecs = data.found ? data : null;
+      } catch (e) {
+        this.advisorSpecs = null;
+      }
+    },
+    async runAdvisorAdvise() {
+      if (!this.form.platform) return;
+      this.advisorLoading = true;
+      this.advisorAdvice = null;
+      try {
+        const { data } = await axios.post('/optimization/advise', {
+          platform: this.form.platform,
+          headline: this.form.headline || undefined,
+          description: this.form.description || undefined
+        });
+        this.advisorAdvice = data;
+      } catch (e) {
+        this.$store.dispatch('showSnackbar', { text: e.response?.data?.message || 'Could not get advice', color: 'error' });
+      } finally {
+        this.advisorLoading = false;
+      }
+    },
+    charBarClass(current, max) {
+      if ((current || 0) > max) return 'ads-char-bar-fill--over';
+      if ((current || 0) > max * 0.8) return 'ads-char-bar-fill--warn';
+      return 'ads-char-bar-fill--ok';
     },
     getStatusColor(status) {
       const colors = {

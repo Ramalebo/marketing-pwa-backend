@@ -9,6 +9,8 @@ const CustomerContact = require('./CustomerContact');
 const PostHistory = require('./PostHistory');
 const ScheduledPost = require('./ScheduledPost');
 const Template = require('./Template');
+const Beacon = require('./Beacon');
+const BeaconEvent = require('./BeaconEvent');
 
 // Define associations
 User.hasMany(Client, { foreignKey: 'createdBy', as: 'clients' });
@@ -43,6 +45,14 @@ ScheduledPost.belongsTo(Ad, { foreignKey: 'adId', as: 'ad' });
 
 Template.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 
+User.hasMany(Beacon, { foreignKey: 'createdBy', as: 'beacons' });
+Beacon.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+Beacon.belongsTo(Ad, { foreignKey: 'adId', as: 'ad' });
+Ad.hasMany(Beacon, { foreignKey: 'adId', as: 'beacons' });
+Beacon.hasMany(BeaconEvent, { foreignKey: 'beaconId', as: 'events' });
+BeaconEvent.belongsTo(Beacon, { foreignKey: 'beaconId', as: 'beacon' });
+BeaconEvent.belongsTo(Ad, { foreignKey: 'adId', as: 'ad' });
+
 module.exports = {
   sequelize,
   User,
@@ -52,5 +62,7 @@ module.exports = {
   CustomerContact,
   PostHistory,
   ScheduledPost,
-  Template
+  Template,
+  Beacon,
+  BeaconEvent
 };

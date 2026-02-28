@@ -1,56 +1,71 @@
 <template>
   <div class="dashboard-page">
-    <!-- KPI Cards (from API) -->
-    <v-row class="kpi-row">
+    <!-- Clean page header -->
+    <div class="clean-page-header">
+      <h1 class="clean-page-header__title">Dashboard</h1>
+      <p class="clean-page-header__subtitle">Manage billboards, digital screens, and outdoor campaigns.</p>
+    </div>
+
+    <!-- Clean KPI cards -->
+    <v-row class="clean-kpi-row">
       <v-col cols="12" sm="6" md="3">
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon-reach">
-            <v-icon color="white" size="22">mdi-account-group</v-icon>
+        <div class="clean-kpi-card">
+          <div class="clean-kpi-card__icon clean-kpi-card__icon--reach">
+            <v-icon size="24">mdi-account-group</v-icon>
           </div>
-          <div class="kpi-content">
-            <div class="kpi-value">{{ kpis.totalReach }}</div>
-            <div class="kpi-change" :class="(parseFloat(kpis.totalReachChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.totalReachChange) }} from last period</div>
-            <div class="kpi-label">Total Reach</div>
+          <div class="clean-kpi-card__body">
+            <div class="clean-kpi-card__value">{{ kpis.totalReach }}</div>
+            <div class="clean-kpi-card__label">Total Reach</div>
+            <div class="clean-kpi-card__change" :class="(parseFloat(kpis.totalReachChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.totalReachChange) }} from last period</div>
           </div>
         </div>
       </v-col>
       <v-col cols="12" sm="6" md="3">
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon-engagement">
-            <v-icon color="white" size="22">mdi-heart-outline</v-icon>
+        <div class="clean-kpi-card">
+          <div class="clean-kpi-card__icon clean-kpi-card__icon--engagement">
+            <v-icon size="24">mdi-heart-outline</v-icon>
           </div>
-          <div class="kpi-content">
-            <div class="kpi-value">{{ kpis.engagementRate }}</div>
-            <div class="kpi-change" :class="(parseFloat(kpis.engagementChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.engagementChange) }} from last period</div>
-            <div class="kpi-label">Engagement Rate</div>
-          </div>
-        </div>
-      </v-col>
-      <v-col cols="12" sm="6" md="3">
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon-conversion">
-            <v-icon color="white" size="22">mdi-cart-outline</v-icon>
-          </div>
-          <div class="kpi-content">
-            <div class="kpi-value">{{ kpis.conversionRate }}</div>
-            <div class="kpi-change" :class="(parseFloat(kpis.conversionChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.conversionChange) }} from last period</div>
-            <div class="kpi-label">Conversion Rate</div>
+          <div class="clean-kpi-card__body">
+            <div class="clean-kpi-card__value">{{ kpis.engagementRate }}</div>
+            <div class="clean-kpi-card__label">Engagement Rate</div>
+            <div class="clean-kpi-card__change" :class="(parseFloat(kpis.engagementChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.engagementChange) }} from last period</div>
           </div>
         </div>
       </v-col>
       <v-col cols="12" sm="6" md="3">
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon-spend">
-            <v-icon color="white" size="22">mdi-currency-usd</v-icon>
+        <div class="clean-kpi-card">
+          <div class="clean-kpi-card__icon clean-kpi-card__icon--conversion">
+            <v-icon size="24">mdi-cart-outline</v-icon>
           </div>
-          <div class="kpi-content">
-            <div class="kpi-value">{{ kpis.totalSpend }}</div>
-            <div class="kpi-change" :class="(parseFloat(kpis.totalSpendChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.totalSpendChange) }} from last period</div>
-            <div class="kpi-label">Ad Spend</div>
+          <div class="clean-kpi-card__body">
+            <div class="clean-kpi-card__value">{{ kpis.conversionRate }}</div>
+            <div class="clean-kpi-card__label">Conversion Rate</div>
+            <div class="clean-kpi-card__change" :class="(parseFloat(kpis.conversionChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.conversionChange) }} from last period</div>
+          </div>
+        </div>
+      </v-col>
+      <v-col cols="12" sm="6" md="3">
+        <div class="clean-kpi-card">
+          <div class="clean-kpi-card__icon clean-kpi-card__icon--spend">
+            <v-icon size="24">mdi-currency-usd</v-icon>
+          </div>
+          <div class="clean-kpi-card__body">
+            <div class="clean-kpi-card__value">{{ kpis.totalSpend }}</div>
+            <div class="clean-kpi-card__label">Ad Spend</div>
+            <div class="clean-kpi-card__change" :class="(parseFloat(kpis.totalSpendChange) || 0) >= 0 ? 'positive' : 'negative'">{{ formatChange(kpis.totalSpendChange) }} from last period</div>
           </div>
         </div>
       </v-col>
     </v-row>
+
+    <!-- Category tabs (Display / Outdoor) -->
+    <div class="clean-category-tabs mb-6">
+      <v-btn variant="text" :to="{ name: 'Dashboard' }" :class="{ 'v-btn--active': $route.name === 'Dashboard' }">Billboards</v-btn>
+      <v-btn variant="text" :to="{ name: 'Display' }" :class="{ 'v-btn--active': $route.name === 'Display' }">Digital Screens</v-btn>
+      <v-btn variant="text" :to="{ name: 'Display' }">Delivery Box Ads</v-btn>
+      <v-btn variant="text" :to="{ name: 'Display' }">Taxi/Car Ads</v-btn>
+      <v-btn variant="text" :to="{ name: 'Display' }">Available Locations</v-btn>
+    </div>
 
     <!-- Charts row -->
     <v-row class="charts-row">

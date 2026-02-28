@@ -66,9 +66,19 @@ const transformAd = (ad) => {
     endDate: data.endDate || null,
     clientId: data.client ? {
       _id: data.client.id.toString(),
+      id: data.client.id,
       name: data.client.name,
       businessName: data.client.businessName
     } : (data.clientId ? data.clientId.toString() : null),
+    campaign: data.campaign || null,
+    adset: data.adset || null,
+    platform: data.platform || null,
+    format: data.format || null,
+    placement: data.placement || null,
+    adType: data.adType || null,
+    cta: data.cta || null,
+    headline: data.headline || null,
+    destinationUrl: data.destinationUrl || null,
     createdBy: data.createdBy.toString(),
     content: {
       images: data.contentImages || [],
@@ -98,8 +108,53 @@ const transformAdInput = (body) => {
   if (data.impressionsPerDay !== undefined) data.impressionsPerDay = data.impressionsPerDay != null ? parseInt(data.impressionsPerDay, 10) : null;
   if (data.startDate !== undefined) data.startDate = data.startDate || null;
   if (data.endDate !== undefined) data.endDate = data.endDate || null;
+  if (data.campaign !== undefined) data.campaign = data.campaign ? String(data.campaign).slice(0, 255) : null;
+  if (data.adset !== undefined) data.adset = data.adset ? String(data.adset).slice(0, 255) : null;
+  if (data.platform !== undefined) data.platform = data.platform ? String(data.platform).slice(0, 64) : null;
+  if (data.format !== undefined) data.format = data.format ? String(data.format).slice(0, 64) : null;
+  if (data.placement !== undefined) data.placement = data.placement ? String(data.placement).slice(0, 128) : null;
+  if (data.adType !== undefined) data.adType = data.adType ? String(data.adType).slice(0, 64) : null;
+  if (data.cta !== undefined) data.cta = data.cta ? String(data.cta).slice(0, 64) : null;
+  if (data.headline !== undefined) data.headline = data.headline ? String(data.headline).slice(0, 500) : null;
+  if (data.destinationUrl !== undefined) data.destinationUrl = data.destinationUrl ? String(data.destinationUrl).slice(0, 1024) : null;
   return data;
 };
+
+const BULK_EDIT_FIELDS = ['campaign', 'adset', 'platform', 'format', 'placement', 'adType', 'cta', 'headline', 'destinationUrl', 'status', 'channel'];
+
+// Bulk update ads (one field, many ads)
+router.patch('/bulk', optionalAuth, async (req, res) => {
+  try {
+    const { ids, field, value } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0 || !field || !BULK_EDIT_FIELDS.includes(field)) {
+      return res.status(400).json({
+        message: 'Request must include ids (array), field (one of: ' + BULK_EDIT_FIELDS.join(', ') + '), and value'
+      });
+    }
+    const where = { id: ids, createdBy: req.user.id };
+    const ads = await Ad.findAll({ where: { id: ids, createdBy: req.user.id } });
+    if (ads.length === 0) {
+      return res.status(404).json({ message: 'No ads found to update' });
+    }
+    const updatePayload = {};
+    if (['reach', 'engagement', 'spend', 'impressionsPerDay'].includes(field)) {
+      const n = field === 'engagement' || field === 'spend' ? parseFloat(value) : parseInt(value, 10);
+      updatePayload[field] = isNaN(n) ? 0 : n;
+    } else {
+      const v = value == null ? null : String(value).trim();
+      updatePayload[field] = v || null;
+    }
+    await Ad.update(updatePayload, { where: { id: ids, createdBy: req.user.id } });
+    const updated = await Ad.findAll({
+      where: { id: ids, createdBy: req.user.id },
+      include: [{ model: Client, as: 'client', attributes: ['id', 'name', 'businessName'], required: false }],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(updated.map(transformAd));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // Get all ads
 router.get('/', optionalAuth, async (req, res) => {

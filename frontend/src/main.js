@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify';
 import '@mdi/font/css/materialdesignicons.css';
 import './assets/styles/global.css';
 import './assets/styles/dra-portal.css';
+import './assets/styles/clean-layout.css';
 import './assets/styles/overlay-fix.css';
 
 const app = createApp(App);

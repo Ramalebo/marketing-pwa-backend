@@ -1,5 +1,5 @@
 <template>
-  <v-app class="app-wrapper">
+  <v-app class="app-wrapper clean-layout">
     <v-navigation-drawer
       v-model="drawer"
       :permanent="$vuetify.display.mdAndUp"
@@ -9,10 +9,13 @@
     >
       <div class="sidebar-header">
         <div class="sidebar-brand">
-          <v-avatar color="#E3F2FD" size="40" class="sidebar-logo">
+          <v-avatar color="rgba(255,255,255,0.12)" size="40" class="sidebar-logo">
             <v-icon color="primary" size="22">mdi-send</v-icon>
           </v-avatar>
-          <h2 class="sidebar-title">Dominant Logic</h2>
+          <div>
+            <h2 class="sidebar-title">Dominant Logic</h2>
+            <span class="sidebar-subtitle">Marketing Platform</span>
+          </div>
         </div>
       </div>
       <v-list class="sidebar-list sidebar-nav" density="comfortable">
@@ -57,12 +60,20 @@
           <template v-slot:prepend><v-icon :color="$route.name === 'Display' ? 'primary' : undefined" icon="mdi-monitor" size="20" class="nav-icon"></v-icon></template>
           <v-list-item-title>Display</v-list-item-title>
         </v-list-item>
+        <v-list-item :to="{ name: 'Beacons' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Beacons' }">
+          <template v-slot:prepend><v-icon :color="$route.name === 'Beacons' ? 'primary' : undefined" icon="mdi-bluetooth" size="20" class="nav-icon"></v-icon></template>
+          <v-list-item-title>Beacons</v-list-item-title>
+        </v-list-item>
         <v-list-item :to="{ name: 'Search' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Search' }">
           <template v-slot:prepend><v-icon :color="$route.name === 'Search' ? 'primary' : undefined" icon="mdi-magnify" size="20" class="nav-icon"></v-icon></template>
-          <v-list-item-title>Search</v-list-item-title>
+          <v-list-item-title>Search Marketing</v-list-item-title>
         </v-list-item>
 
         <v-list-subheader class="nav-section-title">TOOLS</v-list-subheader>
+        <v-list-item :to="{ name: 'Optimization' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Optimization' }">
+          <template v-slot:prepend><v-icon :color="$route.name === 'Optimization' ? 'primary' : undefined" icon="mdi-auto-fix" size="20" class="nav-icon"></v-icon></template>
+          <v-list-item-title>Optimization</v-list-item-title>
+        </v-list-item>
         <v-list-item :to="{ name: 'Reports' }" class="nav-item" :class="{ 'v-list-item--active': $route.name === 'Reports' }">
           <template v-slot:prepend><v-icon :color="$route.name === 'Reports' ? 'primary' : undefined" icon="mdi-file-document-outline" size="20" class="nav-icon"></v-icon></template>
           <v-list-item-title>Reports</v-list-item-title>
@@ -86,6 +97,10 @@
       </div>
       <v-spacer class="app-bar-spacer" />
       <div class="app-bar-actions">
+        <span class="app-bar-datetime">{{ currentDateTime }}</span>
+        <v-btn icon variant="text" size="small" class="text-medium-emphasis" aria-label="Notifications">
+          <v-icon size="20">mdi-bell-outline</v-icon>
+        </v-btn>
         <v-btn variant="flat" color="primary" class="app-bar-btn" :to="{ name: 'Ads' }" prepend-icon="mdi-plus">
           <span class="app-bar-btn-text">New Campaign</span>
         </v-btn>
@@ -172,6 +187,12 @@ export default {
     };
   },
   computed: {
+    currentDateTime() {
+      const d = new Date();
+      const date = d.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/');
+      const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+      return `${date}, ${time}`;
+    },
     ...mapGetters(['user', 'isMainUser']),
     pageTitle() {
       const names = {
@@ -183,7 +204,9 @@ export default {
         Notes: 'Notes',
         Email: 'Email',
         SMS: 'SMS',
-        Search: 'Search',
+        Search: 'Search Marketing',
+        Optimization: 'Optimization Engine',
+        Beacons: 'Bluetooth Beacons',
         Reports: 'Reports',
         Chatbot: 'Chatbot',
         Users: 'Users',
@@ -196,6 +219,9 @@ export default {
     pageSubtitle() {
       if (this.$route.name === 'Dashboard') return 'Monitor your multi-channel marketing performance';
       if (this.$route.name === 'Display') return 'Manage billboards, digital screens, and outdoor campaigns';
+      if (this.$route.name === 'Search') return 'SEO best practices so your clients appear first in search';
+      if (this.$route.name === 'Optimization') return 'Ad spec advisor and self-optimizing recommendations';
+      if (this.$route.name === 'Beacons') return 'Proximity marketing: prompt customers with ads in fenced locations';
       return '';
     },
     userInitial() {

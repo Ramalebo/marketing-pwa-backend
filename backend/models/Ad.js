@@ -58,6 +58,44 @@ const Ad = sequelize.define('Ad', {
     allowNull: true,
     field: 'content_text'
   },
+  campaign: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  adset: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  platform: {
+    type: DataTypes.STRING(64),
+    allowNull: true
+  },
+  format: {
+    type: DataTypes.STRING(64),
+    allowNull: true
+  },
+  placement: {
+    type: DataTypes.STRING(128),
+    allowNull: true
+  },
+  adType: {
+    type: DataTypes.STRING(64),
+    allowNull: true,
+    field: 'ad_type'
+  },
+  cta: {
+    type: DataTypes.STRING(64),
+    allowNull: true
+  },
+  headline: {
+    type: DataTypes.STRING(500),
+    allowNull: true
+  },
+  destinationUrl: {
+    type: DataTypes.STRING(1024),
+    allowNull: true,
+    field: 'destination_url'
+  },
   status: {
     type: DataTypes.ENUM('draft', 'pending', 'approved', 'published', 'archived'),
     defaultValue: 'draft'

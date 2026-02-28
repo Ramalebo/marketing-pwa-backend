@@ -10,6 +10,13 @@
 4. **Environment:** Add all variables from the table in § 3.4 (DB_*, SMTP_*, FRONTEND_URL, JWT_SECRET, etc.).
 5. **Create Web Service** – Render will build and deploy. Health check: `https://your-service.onrender.com/health`.
 6. **Frontend:** Set `VUE_APP_API_URL=https://your-service.onrender.com/api` in `frontend/.env.production`, run `npm run build` in `frontend`, then upload `frontend/dist` to your host (e.g. cPanel at dominantlogic.tech).
+7. **SQL:** Run migrations on your MySQL database once (see **Step 4.5**). To apply **all changes** (campaign/AdFlow columns, dashboard, outdoor, beacons) in one go, run `backend/sql/deploy_all_migrations.sql`.
+
+### Redeploy after code changes
+
+1. **Push** your latest code to the same branch (e.g. `main`) that Render uses. Render will auto-deploy.
+2. **If this release adds new DB tables/columns:** Run the SQL migrations (Step 4.5). Use **`backend/sql/deploy_all_migrations.sql`** to apply all changes (campaign columns, dashboard, outdoor, beacons) in one go; safe to run (skips existing columns/tables if you use `--force` or run sections).
+3. **Frontend:** If you changed the frontend, run `cd frontend && npm run build` and upload `frontend/dist` to cPanel.
 
 ---
 
@@ -207,6 +214,46 @@ git push -u origin main
 4. **Update** environment variables in Render
 5. **Run** your schema SQL
 
+### 3.7: DB_ALTER (optional)
+
+On Render you can set **`DB_ALTER=1`** so Sequelize runs `sync({ alter: true })` and adds missing columns/tables on startup. If you prefer to manage schema yourself, leave it unset and run SQL migrations manually (see § 4.5).
+
+---
+
+## 📜 Step 4.5: Run SQL migrations (when you add new features)
+
+When you deploy code that adds **new tables or columns**, run the matching SQL on your MySQL database once.
+
+**Where to run:** cPanel → phpMyAdmin (select your DB) or any MySQL client connected to your production DB.
+
+### Recommended: one script for all changes
+
+**`backend/sql/deploy_all_migrations.sql`** – applies everything in order:
+
+1. **Campaign / AdFlow columns** on `ads`: campaign, adset, platform, format, placement, ad_type, cta, headline, destination_url  
+2. **Dashboard columns** on `ads`: channel, reach, engagement, spend  
+3. **Outdoor / display columns** on `ads`: display_type, location, size, period, impressions_per_day, start_date, end_date  
+4. **Beacon tables**: `beacons`, `beacon_events` (proximity marketing)
+
+**How to run:**
+
+1. Open phpMyAdmin, select your database (e.g. `dominan1_marketing_pwa`).
+2. Click **Import** or **SQL**.
+3. Paste the contents of `backend/sql/deploy_all_migrations.sql` (or upload the file).
+4. Execute. If you get **Duplicate column** on some lines (columns already exist), either run the rest of the script from that point, or from the command line run: `mysql -u user -p dbname --force < deploy_all_migrations.sql` so it continues on error.
+
+### Individual scripts (optional)
+
+| Script | Purpose |
+|--------|--------|
+| `deploy_all_migrations.sql` | **All of the below in one file** (campaign + dashboard + outdoor + beacons). |
+| `add_ad_platform_columns.sql` | Campaign/AdFlow columns only (campaign, headline, destination_url, etc.). |
+| `add_dashboard_columns.sql` | channel, reach, engagement, spend. |
+| `add_outdoor_columns.sql` | display_type, location, size, period, etc. |
+| `add_beacon_tables.sql` | Creates `beacons` and `beacon_events`. |
+
+**Alternative:** If you set **`DB_ALTER=1`** in Render, Sequelize can create new tables on deploy; you may still need to run the ads column migrations once if the ads table was created before those columns existed.
+
 ---
 
 ## 🎨 Step 5: Update Frontend to Use Render Backend
@@ -313,6 +360,7 @@ npm run build
 - [ ] Render account created
 - [ ] Web service created on Render
 - [ ] Environment variables added to Render
+- [ ] **SQL migrations run** (e.g. `deploy_all_migrations.sql` for campaign + beacons + all columns)
 - [ ] Backend deployed successfully
 - [ ] Backend URL copied
 - [ ] Database connection working
